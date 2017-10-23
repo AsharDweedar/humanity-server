@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "start": "node server/server.js",
-    "test": "node node_modules/jest/bin/jest.js --watch"
+    "test": "mocha tests/server.test.js --watch"
   },
   "dependencies": {
+    "chai": "^4.1.2",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "mocha": "^4.0.1",
     "morgan": "^1.9.0",
     "mysql2": "^1.4.2",
     "request": "^2.83.0",
