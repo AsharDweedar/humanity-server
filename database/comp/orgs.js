@@ -15,7 +15,8 @@ var schema = sequelize.define('Orgs', {
     allowNull:false
   },
   email:{
-  	type:Sequelize.STRING
+  	type:Sequelize.STRING,
+    allowNull: false
   },
   rate:{
   	type:Sequelize.STRING
@@ -24,12 +25,12 @@ var schema = sequelize.define('Orgs', {
 });
 
 
-// schema.sync({ alter: true })
-//   .then((data) => {
-//     console.log('Orgs table created successfuly');
-//   })
-//   .catch((err) => {
-//     console.log(err)
-//   })
+schema.sync({ alter: true })
+  .then((data) => {
+    console.log('Orgs table created successfuly');
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 
 module.exports = schema;
