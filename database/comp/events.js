@@ -15,7 +15,7 @@ var schema = sequelize.define('Events', {
   },
   time: {
     type:Sequelize.DATE
-  }
+  },
   org_id:{
   	type:Sequelize.STRING
   }
