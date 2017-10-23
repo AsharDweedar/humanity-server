@@ -24,14 +24,14 @@ var schema = sequelize.define('Orgs', {
  
 });
 
-schema.drop();
+//schema.drop();
 
-schema.sync({ alter: true })
-  .then((data) => {
-    console.log('Orgs table created successfuly');
-  })
-  .catch((err) => {
-    console.log(err)
-  })
+// schema.sync({ alter: true })
+//   .then((data) => {
+//     console.log('Orgs table created successfuly');
+//   })
+//   .catch((err) => {
+//     console.log(err)
+//   })
 
 module.exports = schema;
