@@ -40,6 +40,19 @@ module.exports = {
           cb({});
         })
     },
+    '/deleteuser' : (req, res, cb) => {
+      var userName = req.session.username;
+      Users.find({where : {username : userName}})
+        .then((user) => {
+          user.destroy({})
+          cb(true);
+        })
+        .catch((err) => {
+          var m = "error erasing because : " + err.errors[0].message
+          console.log(m);
+          cb(false, {message: m});
+        })
+    },
   },
   post : {
     '/signin' : (req, res, cb) => {
@@ -71,7 +84,7 @@ module.exports = {
           cb(true , m);
         })
         .catch((err) => {
-          var m = "recieved user : " + user + " but not saved coz : " + err.message;
+          var m = "recieved user : " + user.username + " but not saved coz : " ;
           var missing = [];
           if (!user.username) {
             missing.push('name');
@@ -82,9 +95,26 @@ module.exports = {
           if (!user.password) {
             missing.push('password');
           }
-          console.log(err , '\n missing : ' + missing);
+          console.log('...............................................');
+          err.errors.forEach((e) => (m += e.message))
+          console.log(m);
+          missing && console.log('missing : ' , missing);
+          console.log('...............................................');
           cb(false , m, missing);
         })
-    }
+    },
+    '/deleteuser' : (req, res, cb) => {
+      var userName = req.body.username;
+      Users.find({where : {username : userName}})
+        .then((user) => {
+          user.destroy({})
+          cb(true);
+        })
+        .catch((err) => {
+          var m = "error erasing because : " + err.errors[0].message
+          console.log(m);
+          cb(false, {message: m});
+        })
+    },
   }
 }

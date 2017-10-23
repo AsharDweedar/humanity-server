@@ -40,6 +40,19 @@ module.exports = {
           cb({});
         })
     },
+    '/deleteorg' : (req, res, cb) => {
+      var orgName = req.session.username;
+      Orgs.find({where : {name : orgName}})
+        .then((org) => {
+          org.destroy({})
+          cb(true);
+        })
+        .catch((err) => {
+          var m = "error erasing because : " + err.errors[0].message
+          console.log(m);
+          cb(false, {message: m});
+        })
+    },
   },
   post : {
     '/signin' : (req, res, cb) => {
@@ -85,6 +98,19 @@ module.exports = {
           console.log(m , 'missing : ' + m);
           cb(false , m, missing);
         })
-    }
+    },
+    '/deleteorg' : (req, res, cb) => {
+      var orgName = req.body.name;
+      Orgs.find({where : {name : orgName}})
+        .then((org) => {
+          org.destroy({})
+          cb(true);
+        })
+        .catch((err) => {
+          var m = "error erasing because : " + err.errors[0].message
+          console.log(m);
+          cb(false, {message: m});
+        })
+    },
   }
 }

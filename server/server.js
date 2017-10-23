@@ -84,7 +84,7 @@ app.get('/users/signout', (req, res) => {
     //400 : bad request ... there is no session to destoy
     res.send({"done" : false});
   }
-})
+});
 app.get('/users/userinfo', (req, res) => {
   if (!req.session.username) {
     res.status(401);//401 : not authrised
@@ -93,7 +93,13 @@ app.get('/users/userinfo', (req, res) => {
   usersRouter['get']['/userinfo'](req, res, (data) => {
     res.send(data);
   });
-})
+});
+app.get('/users/deleteuser', (req, res) => {
+  usersRouter['get']['/deleteuser'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? {"done" : done} : {"error" : error});
+  })
+});
 app.post('/users/signin', (req, res) => {
   usersRouter['post']['/signin'](req, res, (done) => {
     //create the session here ....
@@ -114,10 +120,17 @@ app.post('/users/signup', (req, res) => {
     res.status(done ? 201 : 400);
     //201 : created , 400 : bad request
     var obj = {message : message}
+    obj.saved = done ;
     obj.missing = missing;
     res.send(obj);
   });
 });
+app.post('/users/deleteuser', (req, res) => {
+  usersRouter['get']['/deleteuser'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? {"done" : done} : {"error" : error});
+  })
+})
 
 
 /***************************************************
@@ -158,6 +171,12 @@ app.get('/orgs/orginfo', (req, res) => {
     res.send(data);
   });
 });
+app.get('/orgs/deleteorg', (req, res) => {
+  orgsRouter['get']['/deleteorg'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? {"done" : done} : {"error" : error});
+  })
+});
 app.post('/orgs/signin', (req, res) => {
   orgsRouter['post']['/signin'](req, res, (data) => {
     //create the session here ....
@@ -181,6 +200,13 @@ app.post('/orgs/signup', (req, res) => {
     res.send(obj);
   });
 });
+app.post('/orgs/deleteorg', (req, res) => {
+  orgsRouter['get']['/deleteorg'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? {"done" : done} : {"error" : error});
+  })
+})
+
 
 
 /***************************************************
