@@ -73,13 +73,13 @@ module.exports = {
         .catch((err) => {
           var m = "recieved user : " + user + " but not saved coz : " + err.message;
           var missing = [];
-          if (!info.username) {
+          if (!user.username) {
             missing.push('name');
           }
-          if (!info.email) {
+          if (!user.email) {
             missing.push('email');
           }
-          if (!info.password) {
+          if (!user.password) {
             missing.push('password');
           }
           console.log(m , 'missing : ' + m);
