@@ -21,6 +21,20 @@ var schema = sequelize.define('Events', {
   }
 });
 
+Events.build({name:"test"})
+        .save()
+        .then((ev) => {
+          var m = `recieved event and saved`;
+          console.log(m);
+          cb(true , m);
+        })
+        .catch((err) => {
+          var m = `error saving event - sign up coz : ${err}`;
+          console.log(m);
+          //edit the events table to accept name of org instead of id ..
+          cb(false , m);
+        })
+
 // schema.drop();
 
 // schema.sync({ alter: true })

@@ -82,7 +82,7 @@ module.exports = {
           if (!user.password) {
             missing.push('password');
           }
-          console.log(m , 'missing : ' + m);
+          console.log(err , '\n missing : ' + missing);
           cb(false , m, missing);
         })
     }
