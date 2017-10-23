@@ -72,8 +72,18 @@ module.exports = {
         })
         .catch((err) => {
           var m = `error saving org : ${info} - sign up coz : ${err.message}`;
-          console.log(m);
-          cb(false , m);
+          var missing = [];
+          if (!info.name) {
+            missing.push('name');
+          }
+          if (!info.email) {
+            missing.push('email');
+          }
+          if (!info.password) {
+            missing.push('password');
+          }
+          console.log(m , 'missing : ' + m);
+          cb(false , m, missing);
         })
     }
   }

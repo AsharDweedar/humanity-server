@@ -87,7 +87,7 @@ app.get('/users/signout', (req, res) => {
 })
 app.get('/users/userinfo', (req, res) => {
   if (!req.session.username) {
-    res.status(400);//400 : bad request
+    res.status(401);//401 : not authrised
     return res.send({});
   } 
   usersRouter['get']['/userinfo'](req, res, (data) => {
@@ -113,7 +113,9 @@ app.post('/users/signup', (req, res) => {
   usersRouter['post']['/signup'](req, res, (done, message) => {
     res.status(done ? 201 : 400);
     //201 : created , 400 : bad request
-    res.send({message : message});
+    var obj = {message : message}
+    obj.missing = missing;
+    res.send(obj);
   });
 });
 
@@ -171,10 +173,12 @@ app.post('/orgs/signin', (req, res) => {
   });
 });
 app.post('/orgs/signup', (req, res) => {
-  orgsRouter['post']['/signup'](req, res, (done, message) => {
+  orgsRouter['post']['/signup'](req, res, (done, message, missing) => {
     res.status(done ? 201 : 400);
     //201 : created , 400 : bad request
-    res.send({message : message});
+    var obj = {message : message}
+    obj.missing = missing;
+    res.send(obj);
   });
 });
 
@@ -221,3 +225,4 @@ var listener = app.listen(port , () => {
 });
 
 
+module.exports = app;

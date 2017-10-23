@@ -72,8 +72,18 @@ module.exports = {
         })
         .catch((err) => {
           var m = "recieved user : " + user + " but not saved coz : " + err.message;
-          console.log(m);
-          cb(false , m);
+          var missing = [];
+          if (!info.username) {
+            missing.push('name');
+          }
+          if (!info.email) {
+            missing.push('email');
+          }
+          if (!info.password) {
+            missing.push('password');
+          }
+          console.log(m , 'missing : ' + m);
+          cb(false , m, missing);
         })
     }
   }
