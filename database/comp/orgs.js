@@ -24,6 +24,7 @@ var schema = sequelize.define('Orgs', {
  
 });
 
+schema.drop();
 
 schema.sync({ alter: true })
   .then((data) => {

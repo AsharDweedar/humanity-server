@@ -51,12 +51,13 @@ describe('users/someEndPoint' , () => {
         body = JSON.parse(body);
         expect(body).to.exist;
         expect(typeof body).to.equal(typeof []);
-        expect(typeof body[0]).to.equal(typeof {});
-        expect(typeof body[0].username).to.equal(typeof '');
-        expect(typeof body[0].password).to.equal(typeof '');
-        expect(typeof body[0].email).to.equal(typeof '');
-        expect(typeof body[0].rate).to.equal(typeof 1);
-        if (typeof body[0].rate === typeof 1){
+        expect(typeof body[3]).to.equal(typeof {});
+        expect(typeof body[3].username).to.equal(typeof '');
+        expect(typeof body[3].password).to.equal(typeof '');
+        expect(typeof body[3].email).to.equal(typeof '');
+        console.log(body[3].rate , typeof body[3].rate )
+        expect(typeof body[3].rate).to.equal(typeof 1);
+        if (typeof body[3].rate === typeof 1){
           console.log('i have them')
         };
       });

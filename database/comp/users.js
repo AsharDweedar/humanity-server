@@ -20,7 +20,7 @@ var schema = sequelize.define('Users', {
   }
 });
 
-
+schema.drop();
 
 schema.sync({ alter: true })
           .then((data) => {
