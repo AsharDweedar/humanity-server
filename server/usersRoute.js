@@ -48,7 +48,7 @@ module.exports = {
           cb(true);
         })
         .catch((err) => {
-          var m = "error erasing because : " + err.errors[0].message
+          var m = "error erasing because : " + err.message
           console.log(m);
           cb(false, {message: m});
         })
