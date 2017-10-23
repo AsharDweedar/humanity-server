@@ -13,12 +13,12 @@ var schema = sequelize.define('OrgsEvents', {
   }
 });
 
-schema.sync({ alter: true })
-  .then((data) => {
-    console.log('Events table created successfuly');
-  })
-  .catch((err) => {
-    console.log(err)
-  })
+// schema.sync({ alter: true })
+//   .then((data) => {
+//     console.log('Events table created successfuly');
+//   })
+//   .catch((err) => {
+//     console.log(err)
+//   })
 
 module.exports = schema;
