@@ -21,7 +21,7 @@ var schema = sequelize.define('Events', {
   }
 });
 
-Events.build({name:"test"})
+schema.build({name:"test"})
         .save()
         .then((ev) => {
           var m = `recieved event and saved`;
