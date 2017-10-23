@@ -40,14 +40,17 @@ describe('server' , () => {
 
 
 describe('users/someEndPoint' , () => {
-  //check of the server returns correct json body if requested users, orgs, events data ...
   describe('/users', () => {
     it('should response with users array if requested /users' , (done) => {
       request('https://thawing-garden-23809.herokuapp.com/users', function(error, res, body) {
         body = JSON.parse(body);
+        expect(body).to.exist;
         expect(typeof body).to.equal(typeof []);
         expect(typeof body[0]).to.equal(typeof {});
         expect(typeof body[0].username).to.equal(typeof '');
+        expect(typeof body[0].password).to.equal(typeof '');
+        expect(typeof body[0].email).to.equal(typeof '');
+        expect(typeof body[0].rate).to.equal(typeof 1);
       });
         done();
     })
@@ -65,8 +68,7 @@ describe('users/someEndPoint' , () => {
     })
   })
 
-  describe('sign-in/out' , () => {
-    xit('should response with 400')
+  describe('users/signin/' , () => {
     it('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
       done();
     })
@@ -74,7 +76,8 @@ describe('users/someEndPoint' , () => {
       done();
     })
   })
-  describe('signout', () => {
+  describe('user/signout', () => {
     xit('should')
+    xit('should response with 401 : not authrised if requested /user/info with a not-signed-in user')
   })
 })
