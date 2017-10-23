@@ -8,7 +8,7 @@ var schema = sequelize.define('Orgs', {
     unique:true
   },
   description: {
-    type: Sequelize.STRING
+    type: Sequelize.TEXT
   },
   password:{
   	type:Sequelize.STRING,
@@ -19,7 +19,7 @@ var schema = sequelize.define('Orgs', {
     allowNull: false
   },
   rate:{
-  	type:Sequelize.STRING
+  	type:Sequelize.DECIMAL
   },
  
 });

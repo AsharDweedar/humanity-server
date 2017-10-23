@@ -16,7 +16,7 @@ var schema = sequelize.define('Users', {
     allowNull:false
   },
   rate:{
-    type:Sequelize.STRING
+    type:Sequelize.DECIMAL
   }
 });
 
