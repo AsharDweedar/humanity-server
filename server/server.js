@@ -126,7 +126,7 @@ app.post('/users/signup', (req, res) => {
   });
 });
 app.post('/users/deleteuser', (req, res) => {
-  usersRouter['get']['/deleteuser'](req, res, (done, err) => {
+  usersRouter['post']['/deleteuser'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
     res.send(done ? {"done" : done} : {"error" : error});
   })
@@ -201,7 +201,7 @@ app.post('/orgs/signup', (req, res) => {
   });
 });
 app.post('/orgs/deleteorg', (req, res) => {
-  orgsRouter['get']['/deleteorg'](req, res, (done, err) => {
+  orgsRouter['post']['/deleteorg'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
     res.send(done ? {"done" : done} : {"error" : error});
   })
