@@ -3,35 +3,40 @@ var request = require('request');
 var expect = chai.expect;
 
 var app = require('../server/server');
+var sequelize = require('../database/main.js');
 
 var server;
-var beforEach = (cb) => cb();
+// var beforEach = (cb) => cb();
 
-describe('' , () => {
-  //before each test we will launch the server ..
-  before(() => {
-    server = app.listen(3337, (err, data) => {
-      if (!err) {
-        console.log('server is listining');
-      } else {
-        console.log('server have error : ' , err);
-      }
-    })
-  });
-  //close the server after each test ...
-  after(() => {
-    request('https://thawing-garden-23809.herokuapp.com/users/logout', function(error, res, body) {
-      server.close();
-    });
+// describe('' , () => {
+//   //before each test we will launch the server ..
+//   before(() => {
+//     server = app.listen(3337, (err, data) => {
+//       if (!err) {
+//         console.log('server is listining');
+//       } else {
+//         console.log('server have error : ' , err);
+//       }
+//     })
+//   });
+//   //close the session after each test ...
+//   after(() => {
+//     request('http://localhost:3337/users/logout', function(error, res, body) {
+//       sequelize.close();
+//       server.close();
+//     });
     
-  });
-})
+//   });
+// })
 
 describe('server' , () => {
   //check if the server listens(starts) correctly ...
-  xit('listens wothout crashing', (done) => {
+  it('listens wothout crashing', (done) => {
     request('https://thawing-garden-23809.herokuapp.com/', function(error, res, body) {
       expect(body).to.exist;
+      if (!!body) {
+        console.log('body exists');
+      }
     });
     done();
   });
@@ -41,7 +46,7 @@ describe('server' , () => {
 
 describe('users/someEndPoint' , () => {
   describe('/users', () => {
-    xit('should response with users array if requested /users' , (done) => {
+    it('should response with users array if requested /users' , (done) => {
       request('https://thawing-garden-23809.herokuapp.com/users', function(error, res, body) {
         body = JSON.parse(body);
         expect(body).to.exist;
@@ -51,6 +56,9 @@ describe('users/someEndPoint' , () => {
         expect(typeof body[0].password).to.equal(typeof '');
         expect(typeof body[0].email).to.equal(typeof '');
         expect(typeof body[0].rate).to.equal(typeof 1);
+        if (typeof body[0].rate === typeof 1){
+          console.log('i have them')
+        };
       });
         done();
     })
