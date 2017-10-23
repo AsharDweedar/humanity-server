@@ -29,7 +29,7 @@ describe('' , () => {
 
 describe('server' , () => {
   //check if the server listens(starts) correctly ...
-  it('listens wothout crashing', (done) => {
+  xit('listens wothout crashing', (done) => {
     request('https://thawing-garden-23809.herokuapp.com/', function(error, res, body) {
       expect(body).to.exist;
     });
@@ -41,7 +41,7 @@ describe('server' , () => {
 
 describe('users/someEndPoint' , () => {
   describe('/users', () => {
-    it('should response with users array if requested /users' , (done) => {
+    xit('should response with users array if requested /users' , (done) => {
       request('https://thawing-garden-23809.herokuapp.com/users', function(error, res, body) {
         body = JSON.parse(body);
         expect(body).to.exist;
@@ -57,22 +57,22 @@ describe('users/someEndPoint' , () => {
   })
 
   describe('/users/signup' , () => {
-    it('should response with status 201 if requested /users/signup with valid user info' , (done) => {
+    xit('should response with status 201 if requested /users/signup with valid user info' , (done) => {
       done();
     })
-    it('should store user data requested /users/signup with valid user info' , (done) => {
+    xit('should store user data requested /users/signup with valid user info' , (done) => {
       done();
     })
-    it('should response with status 400 if requested /users/signup with invalid user info' , (done) => {
+    xit('should response with status 400 if requested /users/signup with invalid user info' , (done) => {
       done();
     })
   })
 
   describe('users/signin/' , () => {
-    it('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
+    xit('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
       done();
     })
-    it('should response with status 400 if requested /users/userinfo for a not signed-in user' , (done) => {
+    xit('should response with status 400 if requested /users/userinfo for a not signed-in user' , (done) => {
       done();
     })
   })
