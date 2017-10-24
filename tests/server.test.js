@@ -11,7 +11,10 @@ var uri = 'http://localhost:3336/';
 // expect(foo).to.have.lengthOf(3);
 // expect(beverages).to.have.property('tea').with.lengthOf(3);
 // expect(answer, 'topic [answer]').to.equal(42);
-var toSignIn;
+
+var someUser;
+var requestWithSession = request.defaults({jar: true});
+
 describe('server' , () => {
   //check if the server listens(starts) correctly ...
   it('listens wothout crashing', (done) => {
@@ -26,7 +29,6 @@ describe('server' , () => {
         request(`${uri}users`, function(error, res, body) {
           var code = res.statusCode;
           if (code) {
-            console.log('status code for /users : ', code);
             expect(code).to.equal(302);
             doneGetUsers();
           }
@@ -35,18 +37,18 @@ describe('server' , () => {
       it('should response with users array if requested /users' , (done) => {
         request(`${uri}users`, function(error, res, body) {
           body = JSON.parse(body);
-          console.log(`recieved ${body.length} users`);
+          someUser = body[0]
           expect(error).to.not.exist;
           expect(body).to.exist;
           expect(body , 'get/users', 'get/users-users are array').to.be.a('array');
-          expect(body[0], 'get/users-user is object').to.be.a('object');
-          expect(body[0], 'get/users-have username').to.have.property('username')
-          expect(body[0].username, 'get/users-username is string').to.be.a('string');
-          expect(body[0], 'get/users-have password').to.have.property('password');
-          expect(body[0].password, 'get/users-password if string').to.be.a('string');
-          expect(body[0], 'get/users-have email').to.have.property('email');
-          expect(body[0].email, 'get/users-email is string').to.be.a('string');
-          expect(body[0]).to.have.property('rate');
+          expect(someUser, 'get/users-user is object').to.be.a('object');
+          expect(someUser, 'get/users-have username').to.have.property('username')
+          expect(someUser.username, 'get/users-username is string').to.be.a('string');
+          expect(someUser, 'get/users-have password').to.have.property('password');
+          expect(someUser.password, 'get/users-password if string').to.be.a('string');
+          expect(someUser, 'get/users-have email').to.have.property('email');
+          expect(someUser.email, 'get/users-email is string').to.be.a('string');
+          expect(someUser).to.have.property('rate');
           //expect(typeof body[0].rate).to.be.a('number');
           done();
         });
@@ -61,13 +63,6 @@ describe('server' , () => {
       }
       it('should response with status 201 if requested /users/signup with valid user info' , (doneOfSignupStatus) => {
         request(opts, (err, res, body) => {
-          if (err) {
-            console.log(err.message , ' status : ' ,res.statusCode);
-          } else {
-            console.log(body);
-            //body = JSON.parse(body);
-            console.log('no errors , saved : ' , body.saved)
-          }
           expect(res.statusCode).to.equal(201);
           doneOfSignupStatus();
         })// request signup  ***********************
@@ -75,13 +70,7 @@ describe('server' , () => {
       it('should store user data requested /users/signup with valid user info' , (doneOfStoreUser) => {
         request(`${uri}users`, function(error, res, body) {
           body = JSON.parse(body);
-          if (error) {
-            console.log('error signup : ' , error.message);
-          } else {
-            //console.log(body);
-          }
           var dbUser = body.reduce((acc, ele) => {
-            console.log(user.username ,ele.username)
             if (user.username === ele.username) {
               acc = ele;
             }
@@ -124,29 +113,55 @@ describe('server' , () => {
 
     describe('users/signin', () => {
       it('should not sign-in a user with in-correct password' , (done) => {
-        done();
+        request({
+          "uri":`${uri}users/signin`,
+          "method": "POST",
+          "json":{"username" : someUser.username, "password" : "not correct password"}
+        }, function (err, res, body) {
+          expect(body).to.not.have.property("username");
+          done();
+        })
       }) // end it
-      it('should sign-in a user with valid username and password' , (done) => {
-        done();
-      }) // end it
+      it('should sign-in a user with valid username and password' , (doneSignIn) => {
+        requestWithSession({
+          "uri":`${uri}users/signin`,
+          "method": "POST",
+          "json":{"username" : someUser.username, "password" : someUser.password}
+        }, function (err, res, body) {
+          expect(body).to.have.property("username");
+          expect(body.username).to.equal(someUser.username);
+          doneSignIn();
+
+          describe('users/userinfo/' , () => {
+            it('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
+              requestWithSession(`${uri}users/userinfo`, function (err, res, body) {
+                body = JSON.parse(body);
+                expect(body.user).to.have.property("username");
+                expect(body.user.username).to.equal(someUser.username);
+                done();
+              })
+            }) // end it
+          })//describe useinfo
+          describe('user/signout', () => {
+            it('should sign user out', function (signedout) {
+              requestWithSession(`${uri}users/signout`,function (err, res, body) {
+                expect(err).to.not.exist;
+                expect(res.statusCode).to.equal(202);
+                signedout();
+              })
+            })
+          }) // describe user/signout
+
+          it('should response with status 400 if requested /users/userinfo for a not signed-in user' , (done) => {
+            request(`${uri}users/signout`,function (err, res, body) {
+                expect(err).to.not.exist;
+                expect(res.statusCode).to.equal(400);
+                done();
+              })
+            done();
+          }) // end it
+        }) // end request with session
+      }) // end it sign in correct password
     }) // describe users/signin/ 
-
-    describe('users/userinfo/' , () => {
-      it('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
-        done();
-      }) // end it
-    })
-
-    describe('user/signout', () => {
-      it('should sign user out', function (signedout) {
-        signedout();
-      })
-    }) // describe user/signout
-
-    describe('users/userinfo', () => {
-      it('should response with status 400 if requested /users/userinfo for a not signed-in user' , (done) => {
-        done();
-      }) // end it
-    }) // describe users/signin/
   }) //describe users end point
 }) //describe server ....
