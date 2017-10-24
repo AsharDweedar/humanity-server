@@ -11,7 +11,7 @@ var uri = 'http://localhost:3336/';
 // expect(foo).to.have.lengthOf(3);
 // expect(beverages).to.have.property('tea').with.lengthOf(3);
 // expect(answer, 'topic [answer]').to.equal(42);
-
+var toSignIn;
 describe('server' , () => {
   //check if the server listens(starts) correctly ...
   it('listens wothout crashing', (done) => {
@@ -38,14 +38,14 @@ describe('server' , () => {
           console.log(`recieved ${body.length} users`);
           expect(error).to.not.exist;
           expect(body).to.exist;
-          expect(body , 'get/users', 'get/users').to.be.a('array');
-          expect(body[0], 'get/users').to.be.a('object');
-          expect(body[0], 'get/users').to.have.property('username')
-          expect(body[0].username, 'get/users').to.be.a('string');
-          expect(body[0], 'get/users').to.have.property('password');
-          expect(body[0].password, 'get/users').to.be.a('string');
-          expect(body[0], 'get/users').to.have.property('email');
-          expect(body[0].email, 'get/users').to.be.a('string');
+          expect(body , 'get/users', 'get/users-users are array').to.be.a('array');
+          expect(body[0], 'get/users-user is object').to.be.a('object');
+          expect(body[0], 'get/users-have username').to.have.property('username')
+          expect(body[0].username, 'get/users-username is string').to.be.a('string');
+          expect(body[0], 'get/users-have password').to.have.property('password');
+          expect(body[0].password, 'get/users-password if string').to.be.a('string');
+          expect(body[0], 'get/users-have email').to.have.property('email');
+          expect(body[0].email, 'get/users-email is string').to.be.a('string');
           expect(body[0]).to.have.property('rate');
           //expect(typeof body[0].rate).to.be.a('number');
           done();
@@ -131,14 +131,16 @@ describe('server' , () => {
       }) // end it
     }) // describe users/signin/ 
 
-    describe('users/signin/' , () => {
+    describe('users/userinfo/' , () => {
       it('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
         done();
       }) // end it
     })
 
     describe('user/signout', () => {
-      it('should')
+      it('should sign user out', function (signedout) {
+        signedout();
+      })
     }) // describe user/signout
 
     describe('users/userinfo', () => {

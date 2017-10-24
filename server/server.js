@@ -109,7 +109,7 @@ app.post('/users/signin', (req, res) => {
       req.session.type = "user";
       console.log('session : ', req.session);
     }
-    res.send({});
+    res.send(info);
   });
 });
 app.post('/users/signup', (req, res) => {
