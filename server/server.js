@@ -88,7 +88,7 @@ app.get('/users/signout', (req, res) => {
 app.get('/users/userinfo', (req, res) => {
   if (!req.session.username) {
     res.status(401);//401 : not authrised
-    return res.send({});
+    return res.send({"found" : false , "message" : "not signed in"});
   } 
   usersRouter['get']['/userinfo'](req, res, (data) => {
     res.send(data);
@@ -165,7 +165,7 @@ app.get('/orgs/signout', (req, res) => {
 app.get('/orgs/orginfo', (req, res) => {
   if (!req.session.username) {
     res.status(400);//400 : bad request
-    return res.send({});
+    return res.send({"found" : false , "message" : "not signed in"});
   } 
   orgsRouter['get']['/orginfo'](req, res, (data) => {
     res.send(data);

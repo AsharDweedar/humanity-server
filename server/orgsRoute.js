@@ -29,15 +29,15 @@ module.exports = {
         .then((org) => {
           if (org){
             res.status(302); //302 : found
-            cb(org);
+            cb({"found" : true , "org" : org});
           } else {
             res.status(404); //404 : not found
-            cb({})
+            cb({"found" : false , "message" : "not found"})
           }
         })
         .catch((err) => {
           res.status(500); //500 : internal server error
-          cb({});
+          cb({"found" : false , "message" : "server error"});
         })
     },
     '/deleteorg' : (req, res, cb) => {
@@ -48,7 +48,7 @@ module.exports = {
           cb(true);
         })
         .catch((err) => {
-          var m = "error erasing because : " + err.errors[0].message
+          var m = "error erasing because : " + err.message
           console.log(m);
           cb(false, {message: m});
         })
@@ -107,7 +107,7 @@ module.exports = {
           cb(true);
         })
         .catch((err) => {
-          var m = "error erasing because : " + err.errors[0].message
+          var m = "error erasing because : " + err.message
           console.log(m);
           cb(false, {message: m});
         })

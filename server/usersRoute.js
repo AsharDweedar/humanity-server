@@ -29,15 +29,15 @@ module.exports = {
         .then((user) => {
           if (user){
             res.status(302); //302 : found
-            cb(user);
+            cb({"found" : true , "user" : user});
           } else {
             res.status(404); //404 : not found
-            cb({})
+            cb({"found" : false , "message" : "not found"})
           }
         })
         .catch((err) => {
           res.status(500); //500 : internal server error
-          cb({});
+          cb({"found" : false , "message" : "server error"});
         })
     },
     '/deleteuser' : (req, res, cb) => {
@@ -48,7 +48,7 @@ module.exports = {
           cb(true);
         })
         .catch((err) => {
-          var m = "error erasing because : " + err.errors[0].message
+          var m = "error erasing because : " + err.message
           console.log(m);
           cb(false, {message: m});
         })
@@ -107,11 +107,17 @@ module.exports = {
       var userName = req.body.username;
       Users.find({where : {username : userName}})
         .then((user) => {
-          user.destroy({})
-          cb(true);
+          if (!!user) {
+            user.destroy({})
+            cb(true);
+          } else {
+            var m = "error erasing because user not found :("
+            console.log(m);
+            cb(false, {message: m});
+          }
         })
         .catch((err) => {
-          var m = "error erasing because : " + err.errors[0].message
+          var m = "error erasing because : " + err.message
           console.log(m);
           cb(false, {message: m});
         })
