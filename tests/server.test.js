@@ -50,7 +50,7 @@ describe('server' , () => {
         });
       })
     })
-    var user = {"username":"Haya","password":"1234","email":"haya@Users.thesis"};
+    var user = {"username":"haya","password":"1234","email":"haya@Users.thesis"};
     describe('/users/signup' , () => {
       var opts = {
         "uri" : `${uri}users/signup`,
@@ -62,7 +62,9 @@ describe('server' , () => {
           if (err) {
             console.log(err.message , ' status : ' ,res.statusCode);
           } else {
-            console.log('no errors , saved : ' , JSON.parse(body).saved)
+            console.log(body);
+            //body = JSON.parse(body);
+            console.log('no errors , saved : ' , body.saved)
           }
           expect(res.statusCode).to.equal(201);
           doneOfSignupStatus();
@@ -74,20 +76,19 @@ describe('server' , () => {
           if (error) {
             console.log('error signup : ' , error.message);
           } else {
-            console.log(body);
+            //console.log(body);
           }
           var dbUser = body.reduce((acc, ele) => {
             console.log(user.username ,ele.username)
             if (user.username === ele.username) {
-              console.log(acc, ele);
               acc = ele;
             }
             return acc;
           }, undefined);
           expect(dbUser).to.exist;
-          expect(dbUser.username).to.equal("Haya")
-          expect(dbUser.password).to.equal("1234")
-          expect(dbUser.email).to.equal("haya@Users.thesis");
+          expect(dbUser.username).to.equal(user.username)
+          expect(dbUser.password).to.equal(user.password)
+          expect(dbUser.email).to.equal(user.email);
          
           console.log('done of them all ..................')
           doneOfStoreUser();
@@ -107,7 +108,7 @@ describe('server' , () => {
         request({
           "uri" : `${uri}users/deleteuser`,
           "method" : "POST",
-          "json" : {"username" : "Ashar"}
+          "json" : {"username" : user.username}
         }, (error, response, resbody) => {
           //we delete the user to make sure our request will work no matter the times we call it ... 
           console.log('error : ', error);

@@ -61,7 +61,7 @@ module.exports = {
       Users.find({where : {username : info.username , password : info.password}})
         .then((user) => {
           if (user.username) {
-            console.log('signing in for : ', user.get('name'));
+            console.log('signing in for : ', user.get('username'));
             res.status(202);
             return cb(true);
           }
