@@ -25,9 +25,11 @@ describe('server' , () => {
       it('should response with status 302 if requested /users' , function (doneGetUsers) {
         request(`${uri}users`, function(error, res, body) {
           var code = res.statusCode;
-          console.log('status code for /users : ', code);
-          expect(code).to.equal(302);
-          doneGetUsers();
+          if (code) {
+            console.log('status code for /users : ', code);
+            expect(code).to.equal(302);
+            doneGetUsers();
+          }
         })
       })
       it('should response with users array if requested /users' , (done) => {
@@ -120,18 +122,29 @@ describe('server' , () => {
       }) //end of "it" delete user ..........doneOfDelete................
     })
 
+    describe('users/signin', () => {
+      it('should not sign-in a user with in-correct password' , (done) => {
+        done();
+      }) // end it
+      it('should sign-in a user with valid username and password' , (done) => {
+        done();
+      }) // end it
+    }) // describe users/signin/ 
+
     describe('users/signin/' , () => {
       it('should response with user\'s info if requested /users/userinfo for a signed-in user' , (done) => {
         done();
       }) // end it
+    })
+
+    describe('user/signout', () => {
+      it('should')
+    }) // describe user/signout
+
+    describe('users/userinfo', () => {
       it('should response with status 400 if requested /users/userinfo for a not signed-in user' , (done) => {
         done();
       }) // end it
     }) // describe users/signin/
-
-    describe('user/signout', () => {
-      it('should')
-      it('should response with 401 : not authrised if requested /user/info with a not-signed-in user')
-    }) // describe user/signout
   }) //describe users end point
 }) //describe server ....

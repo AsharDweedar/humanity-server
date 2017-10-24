@@ -61,16 +61,16 @@ module.exports = {
       Users.find({where : {username : info.username , password : info.password}})
         .then((user) => {
           if (user.username) {
-            console.log('signing in for : ', user.get('username'));
+            console.log('signing in for : ', user.username);
             res.status(202);
-            return cb(true);
+            return cb(user);
           }
           res.status(400); //400 : bad request
-          cb(false);
+          cb({});
         })
         .catch((err , user) => {
           res.status(500); //500 : internal server error
-          cb(false);          
+          cb({});          
         })
     },
     '/signup' : (req, res, cb) => {

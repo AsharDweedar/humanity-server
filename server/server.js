@@ -101,17 +101,15 @@ app.get('/users/deleteuser', (req, res) => {
   })
 });
 app.post('/users/signin', (req, res) => {
-  usersRouter['post']['/signin'](req, res, (done) => {
+  usersRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
-    if (done) {
+    if (info) {
       req.session.username = req.body.username;
       req.session.password = req.body.password;
       req.session.type = "user";
       console.log('session : ', req.session);
-      res.send({"done" : true , "type" : "user"});
-    } else {
-      res.send({"done" : false});
     }
+    res.send({});
   });
 });
 app.post('/users/signup', (req, res) => {
@@ -178,17 +176,15 @@ app.get('/orgs/deleteorg', (req, res) => {
   })
 });
 app.post('/orgs/signin', (req, res) => {
-  orgsRouter['post']['/signin'](req, res, (data) => {
+  orgsRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
-    if (data) {
+    if (info) {
       req.session.username = req.body.name;
       req.session.password = req.body.password;
       req.session.type = "org";
       console.log('session : ', req.session);
-      res.send({"done" : true , "type" : "org"});
-    } else {
-      res.send({"done" : false});
     }
+    res.send(info);
   });
 });
 app.post('/orgs/signup', (req, res) => {

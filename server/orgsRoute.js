@@ -61,16 +61,16 @@ module.exports = {
       Orgs.find({where : {name : info.name , password : info.password}})
         .then((org) => {
           if (org.name) {
-            console.log('signing in for : ', org.get('name'));
+            console.log('signing in for : ', org.name);
             res.status(202);
-            return cb(true)
+            return cb(org);
           }
           res.status(400); //400 : bad request
-          cb(false);
+          cb({});
         })
         .catch((err) => {
           res.status(500); //500 : internal server error
-          cb(false);          
+          cb({});          
         })
     },
     '/signup' : (req, res, cb) => {
