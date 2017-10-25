@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server/server.js",
-    "test": "mocha tests/server.test.js --watch"
+    "test": "mocha tests/"
   },
   "dependencies": {
     "chai": "^4.1.2",

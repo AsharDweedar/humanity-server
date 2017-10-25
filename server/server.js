@@ -192,6 +192,7 @@ app.post('/orgs/signup', (req, res) => {
     res.status(done ? 201 : 400);
     //201 : created , 400 : bad request
     var obj = {message : message}
+    obj.saved = done ;
     obj.missing = missing;
     res.send(obj);
   });
@@ -219,7 +220,10 @@ app.get('/events', (req, res) => {
     //302 : found , 404 : not found, 500 : intrnal server error
     res.send(events);
   });
-})
+});
+app.get('/events/myevents', (req, res) => {
+  
+});
 app.post('/events/create', (req, res) => {
   if (req.session.type !== "org") {
     res.status(401); //401 : un authrized ...
