@@ -1,14 +1,27 @@
 const Events = require('../database/comp/events.js');
+const OrgsEvents = require('../database/comp/orgsevents.js');
 
 module.exports = {
   get : {
       '/' : (req, res, cb) => {
         Events.findAll()
-          .then((data) => {
-            cb(true, data);
+          .then((events) => {
+            cb(true, events);
           })
           .catch((err) => {
             console.log('error getting Events : ' , err);
+            cb(false, []);
+          })
+      },
+      '/myevents' : (req, res, cb) => {
+        var query = {}
+        var selector = req.session.type === 'user' ? "user_id" : "org_id"
+        query[selector] = req.session.id;
+        OrgsEvents.find(query)
+          .then((events) => {
+            cb(true, events);
+          })
+          .catch((err) => {
             cb(false, []);
           })
       }

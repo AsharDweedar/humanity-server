@@ -104,8 +104,9 @@ app.post('/users/signin', (req, res) => {
   usersRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
     if (info) {
-      req.session.username = req.body.username;
-      req.session.password = req.body.password;
+      req.session.username = info.username;
+      req.session.password = info.password;
+      req.session.id = info.id;
       req.session.type = "user";
       console.log('session : ', req.session);
     }
@@ -126,7 +127,7 @@ app.post('/users/signup', (req, res) => {
 app.post('/users/deleteuser', (req, res) => {
   usersRouter['post']['/deleteuser'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send(done ? {"done" : done} : {"error" : error});
+    res.send(done ? {"done" : done} : {"error" : err});
   })
 })
 
@@ -178,11 +179,12 @@ app.get('/orgs/deleteorg', (req, res) => {
 app.post('/orgs/signin', (req, res) => {
   orgsRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
+    console.log('session for the user : ', info);
     if (info) {
-      req.session.username = req.body.name;
-      req.session.password = req.body.password;
+      req.session.username = info.name;
+      req.session.password = info.password;
+      req.session.id = info.id;
       req.session.type = "org";
-      console.log('session : ', req.session);
     }
     res.send(info);
   });
@@ -200,7 +202,7 @@ app.post('/orgs/signup', (req, res) => {
 app.post('/orgs/deleteorg', (req, res) => {
   orgsRouter['post']['/deleteorg'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send(done ? {"done" : done} : {"error" : error});
+    res.send(done ? {"done" : done} : {"error" : err});
   })
 })
 
@@ -222,7 +224,17 @@ app.get('/events', (req, res) => {
   });
 });
 app.get('/events/myevents', (req, res) => {
-  
+  if (!!req.session) {
+    res.status(400);
+    return res.send({"found" : false , "message" : "sign in first"});
+  } else {
+    eventsRouter['get']['/myevents'](req, res, (done, events) => {
+      res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+      //302 : found , 404 : not found, 500 : intrnal server error
+      if (done) console.log(`found : ${events.length} events at /myevents`);
+      res.send(events);
+    });
+  }
 });
 app.post('/events/create', (req, res) => {
   if (req.session.type !== "org") {

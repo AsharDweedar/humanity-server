@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 const Users = require('../database/comp/users.js');
 
 module.exports = {
@@ -55,20 +57,26 @@ module.exports = {
     },
   },
   post : {
-    '/signin' : (req, res, cb) => {
-      var info = req.body;
-      console.log('info to users/signin :  ', info);
-      Users.find({where : {username : info.username , password : info.password}})
-        .then((user) => {
-          if (user.username) {
-            console.log('signing in for : ', user.username);
-            res.status(202);
-            return cb(user);
+    '/signin' : ({body}, res, cb) => {
+      console.log(`user to users/signin :  ${body}`);
+      Users.find({where : {username : body.username}})
+        .then((dbUser) => {
+          if (!dbUser.username) {
+            res.status(400); //400 : bad request
+            return cb({});
           }
-          res.status(400); //400 : bad request
-          cb({});
+          bcrypt.compare(body.password, dbUser.password , function (err, match) {
+            console.log('signing in for : ', dbUser.username);
+            if (match) {
+              res.status(202);
+              cb(dbUser);
+            } else {
+              res.status(400); //400 : bad request
+              return cb({});
+            }
+          })
         })
-        .catch((err , user) => {
+        .catch((err) => {
           res.status(500); //500 : internal server error
           cb({});          
         })
@@ -76,32 +84,36 @@ module.exports = {
     '/signup' : (req, res, cb) => {
       var user = req.body;
       console.log('info of user to signup : ', user);
-      Users.build(user)
-        .save()
-        .then((data) => {
-          var m = "recieved user : " + user.username + " and saved !!";
-          console.log(m);
-          cb(true , m);
-        })
-        .catch((err) => {
-          var m = "recieved user : " + user.username + " but not saved coz : " ;
-          var missing = [];
-          if (!user.username) {
-            missing.push('name');
-          }
-          if (!user.email) {
-            missing.push('email');
-          }
-          if (!user.password) {
-            missing.push('password');
-          }
-          console.log('...............................................');
-          err.errors.forEach((e) => (m += e.message))
-          console.log(m);
-          missing && console.log('missing : ' , missing);
-          console.log('...............................................');
-          cb(false , m, missing);
-        })
+      bcrypt.hash(user.password, 10 , function (err , hash) {
+        user.password = hash;
+        Users.build(user)
+          .save()
+          .then((data) => {
+            var m = "recieved user : " + user.username + " and saved !!";
+            console.log(m);
+            cb(true , m);
+          })
+          .catch((err) => {
+            console.log(err)
+            var m = "recieved user : " + user.username + " but not saved coz : " ;
+            var missing = [];
+            if (!user.username) {
+              missing.push('name');
+            }
+            if (!user.email) {
+              missing.push('email');
+            }
+            if (!user.password) {
+              missing.push('password');
+            }
+            console.log('...............................................');
+            if (err.errors) err.errors.forEach((e) => (m += e.message))
+            console.log(m);
+            missing && console.log('missing : ' , missing);
+            console.log('...............................................');
+            cb(false , m, missing);
+          })
+      })
     },
     '/deleteuser' : (req, res, cb) => {
       var userName = req.body.username;

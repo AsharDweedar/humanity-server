@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 const Orgs = require('../database/comp/orgs.js');
 
 module.exports = {
@@ -55,49 +57,59 @@ module.exports = {
     },
   },
   post : {
-    '/signin' : (req, res, cb) => {
-      var info = req.body;
-      console.log('info to orgs/signin :  ', info);
-      Orgs.find({where : {name : info.name , password : info.password}})
-        .then((org) => {
-          if (org.name) {
-            console.log('signing in for : ', org.name);
-            res.status(202);
-            return cb(org);
+    '/signin' : ({body}, res, cb) => {
+      console.log(`user to orgs/signin :  ${body}`);
+      Orgs.find({where : {name : body.name}})
+        .then((dbOrgs) => {
+          if (!dbOrgs.name) {
+            res.status(400); //400 : bad request
+            return cb({});
           }
-          res.status(400); //400 : bad request
-          cb({});
+          bcrypt.compare(body.password, dbOrgs.password , function (err, match) {
+            console.log('signing in for : ', dbOrgs.name);
+            if (match) {
+              res.status(202);
+              cb(dbOrgs);
+            } else {
+              res.status(400); //400 : bad request
+              return cb({});
+            }
+          })
         })
         .catch((err) => {
+          console.log(err.message);
           res.status(500); //500 : internal server error
           cb({});          
         })
     },
     '/signup' : (req, res, cb) => {
-      var info = req.body;
-      console.log('info of org to signup : ', info);
-      Orgs.build(info)
-        .save()
-        .then((data) => {
-          var m = `recieved org : ${info.name} and saved`;
-          console.log(m);
-          cb(true , m);
-        })
-        .catch((err) => {
-          var m = `error saving org : ${info} - sign up coz : ${err.message}`;
-          var missing = [];
-          if (!info.name) {
-            missing.push('name');
-          }
-          if (!info.email) {
-            missing.push('email');
-          }
-          if (!info.password) {
-            missing.push('password');
-          }
-          console.log(m , 'missing : ' + m);
-          cb(false , m, missing);
-        })
+      var org = req.body;
+      console.log('info of org to signup : ', org.name);
+      bcrypt.hash(org.password, 10 , function (err , hash) {
+        org.password = hash;
+        Orgs.build(org)
+          .save()
+          .then((data) => {
+            var m = `recieved org : ${org.name} and saved`;
+            console.log(m);
+            cb(true , m);
+          })
+          .catch((err) => {
+            var m = `error saving org : ${org} - sign up coz : ${err.message}`;
+            var missing = [];
+            if (!org.name) {
+              missing.push('name');
+            }
+            if (!org.email) {
+              missing.push('email');
+            }
+            if (!org.password) {
+              missing.push('password');
+            }
+            console.log(m , 'missing : ' + m);
+            cb(false , m, missing);
+          })
+      })
     },
     '/deleteorg' : (req, res, cb) => {
       var orgName = req.body.name;
