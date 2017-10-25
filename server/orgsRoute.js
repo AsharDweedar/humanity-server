@@ -61,7 +61,7 @@ module.exports = {
       console.log(`user to orgs/signin :  ${body}`);
       Orgs.find({where : {name : body.name}})
         .then((dbOrgs) => {
-          if (!dbOrgs.name) {
+          if (!dbOrgs) {
             res.status(400); //400 : bad request
             return cb({});
           }
@@ -111,10 +111,10 @@ module.exports = {
           })
       })
     },
-    '/deleteorg' : (req, res, cb) => {
-      var orgName = req.body.name;
-      Orgs.find({where : {name : orgName}})
+    '/deleteorg' : ({body : {name}}, res, cb) => {
+      Orgs.find({where : {name : name}})
         .then((org) => {
+          if (!org) return cb(false, {message: "not founf in db"});
           org.destroy({})
           cb(true);
         })

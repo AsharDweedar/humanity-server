@@ -115,9 +115,8 @@ module.exports = {
           })
       })
     },
-    '/deleteuser' : (req, res, cb) => {
-      var userName = req.body.username;
-      Users.find({where : {username : userName}})
+    '/deleteuser' : ({body }, res, cb) => {
+      Users.find({where : {"username" : body.username}})
         .then((user) => {
           if (!!user) {
             user.destroy({})
