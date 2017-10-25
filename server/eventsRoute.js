@@ -1,5 +1,7 @@
 const Events = require('../database/comp/events.js');
 const OrgsEvents = require('../database/comp/orgsevents.js');
+const Users = require('../database/comp/users.js');
+
 
 module.exports = {
   get : {
@@ -44,7 +46,15 @@ module.exports = {
           //edit the events table to accept name of org instead of id ..
           cb(false , m);
         })
-    }
+    },
+    // '/join' : (req, res, cb) => {
+    //   var username = req.session.username;
+    //   var event = req.dody;
+    //   Users.find({where : {"username" : username}})
+    //     .then(({id}) => {
+    //       OrgsEvents.build({event_id: event.id ,user_id:  ,org_id: event})
+    //     })
+    // }
   }
 }
 
