@@ -35,12 +35,9 @@ var schema = sequelize.define('EventsUsers', {
 
 //events-users
 Users.belongsToMany(Events, { through: schema } );
-Events.hasMany(Users, { through: schema } );
 Users.belongsToMany(Events, { through: schema } );
-Events.hasMany(Users, { through: schema } );
 
 //events-orgs
-Events.hasOne(Orgs, { through: schema } );
 Orgs.belongsToMany(Events, { through: schema } );
 
 
