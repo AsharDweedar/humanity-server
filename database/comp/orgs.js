@@ -19,19 +19,19 @@ var schema = sequelize.define('Orgs', {
     allowNull: false
   },
   rate:{
-  	type:Sequelize.DECIMAL
-  },
- 
+  	type:Sequelize.INTEGER
+  }
 });
 
 //schema.drop();
 
-// schema.sync({ alter: true })
-//   .then((data) => {
-//     console.log('Orgs table created successfuly');
-//   })
-//   .catch((err) => {
-//     console.log(err)
-//   })
+schema
+  .sync({ alter: true, force : true })
+  .then((data) => {
+    console.log('Orgs table created successfuly');
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 
 module.exports = schema;

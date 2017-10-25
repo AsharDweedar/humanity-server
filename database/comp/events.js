@@ -15,20 +15,18 @@ var schema = sequelize.define('Events', {
   },
   time: {
     type:Sequelize.DATE
-  },
-  org_id:{
-  	type:Sequelize.STRING
   }
 });
 
 // schema.drop();
 
-// schema.sync({ alter: true , force : true})
-//   .then((data) => {
-//     console.log('Events table created successfuly');
-//   })
-//   .catch((err) => {
-//     console.log(err)
-//   })
+
+schema.sync({ alter: true , force : true})
+  .then((data) => {
+    console.log('Events table created successfuly');
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 
 module.exports = schema;

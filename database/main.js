@@ -1,6 +1,17 @@
 
 var Sequelize = require('sequelize');
+var config = require('../config.js');
 
+const sequelize = new Sequelize('humanity', 'root', config.mysqlPassword , {
+  host: 'localhost',
+  dialect: 'mysql',
+  pool: {
+    max: 5,
+    min: 0,
+    idle: 10000
+  }
+});
+/*
 const sequelize = new Sequelize('sql12201289', 'sql12201289', 'RImDWfyQF6' , {
   host: 'sql12.freemysqlhosting.net',
   dialect: 'mysql',
@@ -10,7 +21,7 @@ const sequelize = new Sequelize('sql12201289', 'sql12201289', 'RImDWfyQF6' , {
     idle: 10000
   }
 });
-
+*/
 //Checking connection status
 sequelize.authenticate()
 	.then(function(err) {

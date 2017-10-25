@@ -16,19 +16,20 @@ var schema = sequelize.define('Users', {
     allowNull:false
   },
   rate:{
-    type:Sequelize.DECIMAL
+    type:Sequelize.INTEGER
   }
 });
 
 //schema.drop();
 
-// schema.sync({ alter: true })
-//           .then((data) => {
-//             console.log('users table created successfuly');
-//           })
-//           .catch((err) => {
-//             console.log(err)
-//           })
+schema
+  .sync({ alter: true, force : true})
+  .then((data) => {
+    console.log('users table created successfuly');
+  })
+  .catch((err) => {
+    console.log(err)
+  })
 
 
 
