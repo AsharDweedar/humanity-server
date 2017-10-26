@@ -2,8 +2,8 @@
 var Sequelize = require('sequelize');
 var config = require('../config.js');
 
-const sequelize = new Sequelize(config.mai.db, config.mai.user, config.mai.password , {
-  host: config.mai.server,
+const sequelize = new Sequelize("sql12201289", "sql12201289", "RImDWfyQF6" , {
+  host: "sql12.freemysqlhosting.net",
   dialect: 'mysql',
   pool: {
     max: 5,
