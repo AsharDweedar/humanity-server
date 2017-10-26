@@ -2,18 +2,8 @@
 var Sequelize = require('sequelize');
 var config = require('../config.js');
 
-// const sequelize = new Sequelize(config.mai.db, config.mai.user, config.mai.password , {
-//   host: config.mai.server,
-//   dialect: 'mysql',
-//   pool: {
-//     max: 5,
-//     min: 0,
-//     idle: 10000
-//   }
-// });
-
-const sequelize = new Sequelize("humanity", "root", "AS-har1passms" , {
-  host: "localhost",
+const sequelize = new Sequelize(config.mai.db, config.mai.user, config.mai.password , {
+  host: config.mai.server,
   dialect: 'mysql',
   pool: {
     max: 5,
@@ -21,6 +11,16 @@ const sequelize = new Sequelize("humanity", "root", "AS-har1passms" , {
     idle: 10000
   }
 });
+
+// const sequelize = new Sequelize("humanity", "root", "****" , {
+//   host: "localhost",
+//   dialect: 'mysql',
+//   pool: {
+//     max: 5,
+//     min: 0,
+//     idle: 10000
+//   }
+// });
 
 //Checking connection status
 sequelize.authenticate()
