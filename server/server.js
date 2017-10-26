@@ -237,17 +237,16 @@ app.get('/events', (req, res) => {
 });
 
 app.get('/events/myevents', (req, res) => {
-  if (!!req.session) {
+  if (!req.session.username) {
     res.status(400);
     return res.send({"found" : false , "message" : "sign in first"});
-  } else {
-    eventsRouter['get']['/myevents'](req, res, (done, events) => {
-      res.status(done ? ((events.length) ? 302 : 404 ) : 500);
-      //302 : found , 404 : not found, 500 : intrnal server error
-      if (done) console.log(`found : ${events.length} events at /myevents`);
-      res.send(events);
-    });
-  }
+  } 
+  eventsRouter['get']['/myevents'](req, res, (done, events) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    if (done) console.log(`found : ${events.length} events at /myevents`);
+    res.send(events);
+  });
 });
 
 app.post('/events/create', (req, res) => {
