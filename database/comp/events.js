@@ -23,7 +23,7 @@ var schema = sequelize.define('Events', {
 
 // schema.drop();
 
-// schema.sync({ alter: true , force : true})
+// schema.sync({ alter: true })
 //   .then((data) => {
 //     console.log('Events table created successfuly');
 //   })

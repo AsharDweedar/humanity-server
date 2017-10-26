@@ -1,0 +1,48 @@
+'/events'
+  get : 
+    '/' : 
+    '/myevents' : 
+  post : 
+    '/create' : 
+      take event from req.body;
+      take event.org_id from req.session.username;
+    '/delteevent' : 
+      take org_id from req.session.id;
+      take event_id from req.body.id;
+    '/join' : 
+      take event_id from req.body.event_id;
+      take user_id from req.session.id;
+
+
+'/users'
+  get : 
+    '/' : 
+    '/signout' : 
+    '/userinfo' : 
+      take userName from req.session.username;
+    '/deleteuser' : 
+      take userName from req.session.username;
+  post :
+    '/signin' : 
+        take user from req.body
+    '/signup' : 
+        take user from req.body;
+    '/deleteuser' :
+      take user from req.body;
+
+
+'/orgs' : 
+  get : 
+    '/' : 
+    '/signout' : 
+    '/orginfo' : 
+      take orgName from req.session.orgname;
+    '/deleteorg' : 
+      take orgName from req.session.orgname;
+  post :
+    '/signin' : 
+        take org from req.body
+    '/signup' : 
+        take org from req.body;
+    '/deleteorg' :
+      take org from req.body;

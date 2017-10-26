@@ -1,8 +1,19 @@
 
 var Sequelize = require('sequelize');
+var config = require('../config.js');
 
-const sequelize = new Sequelize('sql12201289', 'sql12201289', 'RImDWfyQF6' , {
-  host: 'sql12.freemysqlhosting.net',
+// const sequelize = new Sequelize(config.mai.db, config.mai.user, config.mai.password , {
+//   host: config.mai.server,
+//   dialect: 'mysql',
+//   pool: {
+//     max: 5,
+//     min: 0,
+//     idle: 10000
+//   }
+// });
+
+const sequelize = new Sequelize("humanity", "root", "AS-har1passms" , {
+  host: "localhost",
   dialect: 'mysql',
   pool: {
     max: 5,
@@ -17,7 +28,7 @@ sequelize.authenticate()
 		console.log('Connection to database has been established successfully');
 	})
 	.catch(function (err) {
-	    console.log('There is connection in ERROR', err);
+	    console.log('There is connection ERROR', err);
 	})
 module.exports = sequelize ;
 

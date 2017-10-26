@@ -101,12 +101,18 @@ app.get('/users/deleteuser', (req, res) => {
   })
 });
 app.post('/users/signin', (req, res) => {
+  if (!!req.session.username) {
+    res.status(400); //401 : un authrized ...
+    console.log('already signed in');
+    return res.send({})
+  }
   usersRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
-    if (info) {
+    console.log(`signing in for : ${info.username}`);
+    if (!!info.username) {
       req.session.username = info.username;
       req.session.password = info.password;
-      req.session.id = info.id;
+      req.session.userid = info.id;
       req.session.type = "user";
       console.log('session : ', req.session);
     }
@@ -177,13 +183,18 @@ app.get('/orgs/deleteorg', (req, res) => {
   })
 });
 app.post('/orgs/signin', (req, res) => {
+  if (!!req.session.name) {
+    res.status(400); //401 : un authrized ...
+    console.log('already signed in');
+    return res.send({})
+  }
   orgsRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
-    console.log('session for the user : ', info);
-    if (info) {
+    console.log('session for the user : ' + info.name);
+    if (!!info.name) {
       req.session.username = info.name;
       req.session.password = info.password;
-      req.session.id = info.id;
+      req.session.orgid = info.id;
       req.session.type = "org";
     }
     res.send(info);
@@ -215,6 +226,7 @@ events router from here
 **************************************************/
 
 var eventsRouter = require('./eventsRoute.js');
+
 app.get('/events', (req, res) => {
   eventsRouter['get']['/'](req, res, (done, events) => {
     res.status(done ? ((events.length) ? 302 : 404 ) : 500);
@@ -223,6 +235,7 @@ app.get('/events', (req, res) => {
     res.send(events);
   });
 });
+
 app.get('/events/myevents', (req, res) => {
   if (!!req.session) {
     res.status(400);
@@ -236,18 +249,41 @@ app.get('/events/myevents', (req, res) => {
     });
   }
 });
+
 app.post('/events/create', (req, res) => {
-  if (req.session.type !== "org") {
+  if (!req.session || (req.session && req.session.type !== "org")) {
     res.status(401); //401 : un authrized ...
     console.log('un authrized user to create event .....');
     return res.send({message : "sign in as organisation first !!"})
   }
   eventsRouter['post']['/create'](req, res, (done, message) => {
     res.status(done ? 201 : 400);
-    res.send({message : message});
+    res.send({"message" : message});
   });
 });
 
+app.post('/events/deleteevent', (req, res) => {
+  if (!req.session || (req.session && req.session.type !== "org")) {
+    res.status(401); //401 : un authrized ...
+    console.log('un authrized user to create event .....');
+    return res.send({message : "sign in as organisation first !!"})
+  }
+  eventsRouter['post']['/deleteevent'](req, res, (done, message) => {
+    res.status(done ? 201 : 400);
+    res.send({"done" : done , "message" : message});
+  });
+});
+
+app.post('/events/join', (req, res) => {
+  if (!req.session.username) {
+    res.status(401); //401 : un authrized ...
+    console.log('un authrized user to join event .....', req.session);
+    return res.send({message : "sign in as user first !!"})
+  }
+  eventsRouter['post']['/join'](req, res, (done, message) => {
+    res.send({"done" : done , "message" : message});
+  });
+});
 
 /***************************************************
 
