@@ -222,6 +222,7 @@ app.post('/orgs/orgbyid', (req, res) => {
     return res.send({"error" : "send org_id please"});
   }
   orgsRouter['post']['/orgbyid'](req, res, (done, data) => {
+    console.log(data)
     res.send(!done ? {"error" : data} : {"org" : data});
   })
 })
