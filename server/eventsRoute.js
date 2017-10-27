@@ -32,7 +32,7 @@ module.exports = {
   post : {
     '/create' : (req, res, cb) => {
       var event = req.body;
-      event.org_id = req.session.username;
+      event.org_id = req.session.id;
       console.log('info of event to create : ', event);
       Events.build(event)
         .save()

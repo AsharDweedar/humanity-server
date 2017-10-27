@@ -217,7 +217,7 @@ app.post('/orgs/deleteorg', (req, res) => {
   })
 });
 app.post('/orgs/orgbyevent', (req, res) => {
-  if (!!req.body.org_id) {
+  if (!req.body.org_id) {
     res.status(400);
     return res.send({"error" : "send org_id please"});
   }
