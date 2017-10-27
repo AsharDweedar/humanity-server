@@ -219,7 +219,7 @@ app.post('/orgs/deleteorg', (req, res) => {
 app.post('/orgs/orgbyid', (req, res) => {
   if (!req.body.org_id) {
     res.status(400);
-    console.log('find org for the id : ' , org_id)
+    console.log('find org for the id : ' + req.body)
     return res.send({"error" : "send org_id please"});
   }
   orgsRouter['post']['/orgbyid'](req, res, (done, data) => {

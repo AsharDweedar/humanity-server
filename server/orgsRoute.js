@@ -129,6 +129,8 @@ module.exports = {
         .then((org) => {
           res.status(!!org ? 302 : 404); //302 : found , 404 : not found
           if (!org) return cb(false, "not founf in db");
+          console.log('found org');
+          console.log(org);
           cb(true , org);
         })
         .catch((err) => {
