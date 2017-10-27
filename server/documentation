@@ -46,3 +46,5 @@
         take org from req.body;
     '/deleteorg' :
       take org from req.body;
+    '/orgbyevent' :
+      take org_id from event object (req.body);

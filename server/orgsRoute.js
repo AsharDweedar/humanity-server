@@ -124,5 +124,19 @@ module.exports = {
           cb(false, {message: m});
         })
     },
+    '/orgbyevent' : ({body}, res, cb) => {
+      Orgs.find({where : {id : body.org_id}})
+        .then((org) => {
+          res.status(!!org.name ? 302 : 404); //302 : found , 404 : not found
+          if (!org) return cb(false, "not founf in db");
+          cb(true , org);
+        })
+        .catch((err) => {
+          res.status(500); //500 :server err
+          var m = "error erasing because : " + err.message
+          console.log(m);
+          cb(false, m);
+        })
+    }
   }
 }
