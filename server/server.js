@@ -292,12 +292,24 @@ app.post('/events/join', (req, res) => {
   });
 });
 
+
 /***************************************************
 
 server 
 
 **************************************************/
+app.post('/admin/deleteEvent', (req, res) => {
+  eventsRouter['admin']['/deleteEvent'](req, res, (done, message) => {
+    res.send({"done" : done , "message" : message});
+  });
+});
 
+app.post('/admin/create', (req, res) => {
+  eventsRouter['admin']['/create'](req, res, (done, message) => {
+    res.status(done ? 201 : 400);
+    res.send({"message" : message});
+  });
+});
 
 var port = process.env.PORT || 3336
 var listener = app.listen(port , () => {

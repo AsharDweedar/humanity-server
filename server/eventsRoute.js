@@ -86,5 +86,39 @@ module.exports = {
             cb(false, message);
           })
     }
+  },
+  admin : {
+    '/deleteEvent' : ({body : {org_id  , event_id}}, res, cb) => {
+      Events.find({where :{ "org_id" : org_id , "id" : event_id}})
+      .then((data) => {
+        if (!!data) data.destroy({});
+        var ev = {"event_id": event_id , "org_id": org_id};
+        OrgsEvents.find({where : ev})
+          .then((data) => {
+            if (!!data) data.destroy({});
+            cb(true, "done");
+          })
+      })
+      .catch(({message}) => {
+        cb(false, message);
+      })
+    },
+    '/create' : (req, res, cb) => {
+      var event = req.body;
+      console.log('info of event to create : ', event);
+      Events.build(event)
+        .save()
+        .then((ev) => {
+          var m = `recieved event : ${event} and saved`;
+          console.log(m);
+          cb(true , m);
+        })
+        .catch((err) => {
+          var m = `error saving event : ${event} - sign up coz : ${err.message}`;
+          console.log(m);
+          //edit the events table to accept name of org instead of id ..
+          cb(false , m);
+        })
+    }
   }
 }
