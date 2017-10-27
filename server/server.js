@@ -216,13 +216,13 @@ app.post('/orgs/deleteorg', (req, res) => {
     res.send(done ? {"done" : done} : {"error" : err});
   })
 });
-app.post('/orgs/orgbyevent', (req, res) => {
+app.post('/orgs/orgbyid', (req, res) => {
   if (!req.body.org_id) {
     res.status(400);
     return res.send({"error" : "send org_id please"});
   }
-  orgsRouter['post']['/orgbyevent'](req, res, (done, data) => {
-    res.send(done ? {"error" : data} : {"org" : data});
+  orgsRouter['post']['/orgbyid'](req, res, (done, data) => {
+    res.send(!done ? {"error" : data} : {"org" : data});
   })
 })
 

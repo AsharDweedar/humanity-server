@@ -124,7 +124,7 @@ module.exports = {
           cb(false, {message: m});
         })
     },
-    '/orgbyevent' : ({body}, res, cb) => {
+    '/orgbyid' : ({body}, res, cb) => {
       Orgs.find({where : {id : body.org_id}})
         .then((org) => {
           res.status(!!org ? 302 : 404); //302 : found , 404 : not found
