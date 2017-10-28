@@ -12,7 +12,7 @@ const Orgs = require('../database/comp/orgs.js');
 
 
 var findUserWhere = (query , cb) => {
-  Users.find(query)
+  Users.findAll(query)
     .then((user) => {
       cb (true, user);
     })
@@ -55,7 +55,7 @@ var findUserEvents = (ID, cb) => {
 /************************************************/
 
 var findOrgWhere = (query , cb) => {
-  Orgs.find(query)
+  Orgs.findAll(query)
     .then((org) => {
       cb (true, org);
     })
@@ -79,7 +79,7 @@ var deleteOrg = (query, cb)  => {
 }
 
 var findOrgEvents = (ID, cb) => {
-  Events.find({where : {"org_id" : ID}})
+  Events.findAll({where : {"org_id" : ID}})
     .then((events) => {
       if (!events.length) {
         return cb(true, [] , "no events found");
@@ -130,7 +130,7 @@ var deleteEvent = ( event_id, cb) => {
 }
 
 var deleteConnection = (query, cb) => {
-  OrgsEvents.find({where : query})
+  OrgsEvents.findAll({where : query})
     .then((connection) => {
       connection.destroy({});
       cb(true);

@@ -21,21 +21,25 @@ module.exports = {
         utils.findOrgEvents(req.session.orgid , cb);
       },
       '/userevents' : (req, res, cb) => {
-        var query = {}
-        OrgsEvents.find({where : query})
+        var all = [];
+        OrgsEvents.findAll({where : {user_id : req.session.userid}})
           .then((connection) => {
             var counter = connection.length;
+            console.log(counter , "connections were found ");
+            console.log(connection.event_id);
             if (counter) {
               for (var i = 0; i < counter; i++) {
-                Events.find({where: {id : connnection.event_id}})
+                Events.find({where: {id : connection[i].event_id}})
                 .then((ev) => {
-                  connection[i] = ev;
-                  if (!--counter) {
-                    cb(true, connection);
+                  console.log('event : ' , ev.name);
+                  all.push(ev);
+                  if (--counter === 0) {
+                    cb(true, all);
                   }
                 })
               }
             } else {
+              OrgsEvents.findAll().then((d)=>{console.log(d)})
               cb(true, [] , "no events found for this user");
             }
           })
@@ -59,7 +63,7 @@ module.exports = {
     '/join' : (req, res, cb) => {
       var event = req.body;
       var user_id = req.session.userid;
-      var ev = {"event_id": event.id , "user_id": user_id , "org_id": event.org_id};
+      var ev = {"event_id": event.id , "user_id": user_id};
       OrgsEvents.find({where : ev})
         .then((data) => {
           if (!!data) {

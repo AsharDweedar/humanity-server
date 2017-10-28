@@ -57,10 +57,10 @@ module.exports = {
   },
   post : {
     '/signin' : ({body}, res, cb) => {
-      console.log(`user to users/signin :  ${body}`);
+      console.log(`user to users/signin :  ${body.username}`);
       Users.find({where : {username : body.username}})
         .then((dbUser) => {
-          if (!dbUser.username) {
+          if (!dbUser || !dbUser.username) {
             res.status(400); //400 : bad request
             return cb({});
           }
@@ -76,6 +76,7 @@ module.exports = {
           })
         })
         .catch((err) => {
+          console.log('error sign in user : ', err.message);
           res.status(500); //500 : internal server error
           cb({});          
         })

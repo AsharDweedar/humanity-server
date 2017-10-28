@@ -39,7 +39,7 @@ module.exports = {
       console.log(`user to orgs/signin :  ${body}`);
       Orgs.find({where : {name : body.name}})
         .then((dbOrgs) => {
-          if (!dbOrgs) {
+          if (!dbOrgs || !dbOrgs.name) {
             res.status(400); //400 : bad request
             return cb({});
           }

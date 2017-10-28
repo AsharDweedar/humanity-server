@@ -209,17 +209,18 @@ app.get('/orgs/deleteorg', (req, res) => {
 app.post('/orgs/signin', (req, res) => {
   if (!!req.session.name) {
     res.status(400); //401 : un authrized ...
-    console.log('already signed in');
+    console.log('already signed in for : ' + req.session.name);
     return res.send({})
   }
   orgsRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
-    console.log('session for the user : ' + info.name);
+    console.log(`signing in for : ${info.name}`);
     if (!!info.name) {
-      req.session.username = info.name;
+      req.session.name = info.name;
       req.session.password = info.password;
       req.session.orgid = info.id;
       req.session.type = "org";
+      console.log('session : ', req.session);
     }
     res.send(info);
   });
@@ -299,7 +300,8 @@ app.get('/events/userevents', (req, res) => {
   eventsRouter['get']['/userevents'](req, res, (done, events , m) => {
     res.status(done ? ((events.length) ? 302 : 404 ) : 500);
     //302 : found , 404 : not found, 500 : intrnal server error
-    re = (done.length) ? { events : events} : {message : m}; 
+    done ? re.events = events : re.message = m ; 
+    console.log(re);
     res.send(re);
   });
 });
