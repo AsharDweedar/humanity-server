@@ -1,19 +1,12 @@
 const bcrypt = require('bcrypt');
 
-const Orgs = require('../database/comp/orgs.js');
+//utils
+const utils = require('./utils.js');
 
 module.exports = {
   get : {
     '/' : (req, res, cb) => {
-      Orgs.findAll()
-        .then((orgs) => {
-          console.log('found : ' , orgs.length , ' orgs ...');
-          cb(true, orgs);
-        })
-        .catch((err) => {
-          console.log('error getting Orgs : ' , err);
-          cb(false, []);
-        })
+      utils.findOrgWhere({}, cb);
     },
     '/signout' : (req, res, cb) => {
       req.session.destroy((err) => {
@@ -27,33 +20,11 @@ module.exports = {
     },
     '/orginfo' : (req, res, cb) => {
       var orgName = req.session.username;
-      Orgs.find({ where : {name : orgName}})
-        .then((org) => {
-          if (org){
-            res.status(302); //302 : found
-            cb({"found" : true , "org" : org});
-          } else {
-            res.status(404); //404 : not found
-            cb({"found" : false , "message" : "not found"})
-          }
-        })
-        .catch((err) => {
-          res.status(500); //500 : internal server error
-          cb({"found" : false , "message" : "server error"});
-        })
+      utils.findOrgWhere({ where : {name : orgName}}, cb);
     },
     '/deleteorg' : (req, res, cb) => {
-      var orgName = req.session.username;
-      Orgs.find({where : {name : orgName}})
-        .then((org) => {
-          org.destroy({})
-          cb(true);
-        })
-        .catch((err) => {
-          var m = "error erasing because : " + err.message
-          console.log(m);
-          cb(false, {message: m});
-        })
+      var orgName = req.session.name;
+      utils.deleteOrg({where: {name: orgName}}, cb);
     },
   },
   post : {
@@ -112,17 +83,7 @@ module.exports = {
       })
     },
     '/deleteorg' : ({body : {name}}, res, cb) => {
-      Orgs.find({where : {name : name}})
-        .then((org) => {
-          if (!org) return cb(false, {message: "not founf in db"});
-          org.destroy({})
-          cb(true);
-        })
-        .catch((err) => {
-          var m = "error erasing because : " + err.message
-          console.log(m);
-          cb(false, {message: m});
-        })
+      utils.deleteOrg({where: {name: name}}, cb);
     },
     '/orgbyid' : ({body}, res, cb) => {
       Orgs.find({where : {id : body.org_id}})
@@ -134,7 +95,7 @@ module.exports = {
         })
         .catch((err) => {
           res.status(500); //500 :server err
-          var m = "error finding because : " + err.message
+          var m = "error finding because : " + err.message;
           console.log(m);
           cb(false, m);
         })

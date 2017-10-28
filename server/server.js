@@ -57,11 +57,10 @@ app.get('/', (req, res) => {
   res.send('i have nothing to the main page ammar !!!');
 })
 
-/***************************************************
-
-//users router from here
-
-**************************************************/
+/************************************************/
+/*************    users router  *****************/
+/*************     from here    *****************/
+/************************************************/
 
 var usersRouter = require('./usersRoute.js');
 app.get('/users', (req, res) => {
@@ -179,15 +178,25 @@ app.get('/orgs/signout', (req, res) => {
     res.send({"done" : false});
   }
 });
+
 app.get('/orgs/orginfo', (req, res) => {
   if (!req.session.username) {
     res.status(400);//400 : bad request
     return res.send({"found" : false , "message" : "not signed in"});
   } 
-  orgsRouter['get']['/orginfo'](req, res, (data) => {
-    res.send(data);
-  });
+  orgsRouter['get']['/orginfo'](req, res, (done, org) => {
+          if (done) {
+            res.status(302); //302 : found
+            res.send({"found" : true , "org" : org});
+          } else {
+            res.status(404); //404 : not found
+            res.send({"found" : false , "message" : "not found"})
+          }
+          res.status(500); //500 : internal server error
+          res.send({"found" : false , "message" : "server error"});
+      });
 });
+
 app.get('/orgs/deleteorg', (req, res) => {
   orgsRouter['get']['/deleteorg'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err

@@ -1,11 +1,5 @@
-//db
-const Events = require('../database/comp/events.js');
-const OrgsEvents = require('../database/comp/orgsevents.js');
-const Users = require('../database/comp/users.js');
-const Orgs = require('../database/comp/orgs.js');
-
 //utils
-const Orgs = require('./utils.js');
+const utils = require('./utils.js');
 
 module.exports = {
   get : {
@@ -20,21 +14,10 @@ module.exports = {
           })
       },
       '/orgevents' : (req, res, cb) => {
-        Events.find({where : {"org_id" : req.session.orgid}})
-          .then((events) => {
-            if (!events.length) {
-              return cb(true, [] , "no events found");
-            }
-            cb(true, events);
-          })
-          .catch((err) => {
-            cb(false, []);
-          })
+        utils.findOrgEvents(req.session.orgid , cb);
       },
       '/userevents' : (req, res, cb) => {
         var query = {}
-        var selector = req.session.type === 'user' ? "user_id" : "org_id"
-        query[selector] = selector === "user_id" ? req.session.userid : req.session.orgid;
         OrgsEvents.find({where : query})
           .then((connection) => {
             var counter = connection.length;
@@ -62,35 +45,12 @@ module.exports = {
       var event = req.body;
       event.org_id = req.session.id;
       console.log('info of event to create : ', event);
-      Events.build(event)
-        .save()
-        .then((ev) => {
-          var m = `recieved event : ${event} and saved`;
-          console.log(m);
-          cb(true , m);
-        })
-        .catch((err) => {
-          var m = `error saving event : ${event} - sign up coz : ${err.message}`;
-          console.log(m);
-          //edit the events table to accept name of org instead of id ..
-          cb(false , m);
-        })
+      utils.createEvent(event, cb);
     },
     '/delteevent' : (req, res, cb) => {
       org_id = req.session.orgid;
       event_id = req.body.id;
-      OrgsEvents.find({where :{ "org_id" : org_id , "event_id" : event_id}})
-        .then((data) => {
-          data.destroy({});
-          Events.find({where :{ "org_id" : org_id , "id" : event_id}})
-            .then((data) => {
-              data.destroy({});
-              cb(true);
-            })
-        })
-        .catch(({message}) => {
-          cb(false, message);
-        })
+      utils.deleteEvent(org_id, event_id, cb);
     },
     '/join' : (req, res, cb) => {
       var event = req.body;
@@ -117,36 +77,12 @@ module.exports = {
   },
   admin : {
     '/deleteEvent' : ({body : {org_id  , event_id}}, res, cb) => {
-      Events.find({where :{ "org_id" : org_id , "id" : event_id}})
-      .then((data) => {
-        if (!!data) data.destroy({});
-        var ev = {"event_id": event_id , "org_id": org_id};
-        OrgsEvents.find({where : ev})
-          .then((data) => {
-            if (!!data) data.destroy({});
-            cb(true, "done");
-          })
-      })
-      .catch(({message}) => {
-        cb(false, message);
-      })
+      utils.deleteEvent(org_id, event_id, cb);
     },
     '/createEvent' : (req, res, cb) => {
       var event = req.body;
       console.log('info of event to create : ', event);
-      Events.build(event)
-        .save()
-        .then((ev) => {
-          var m = `recieved event : ${event} and saved`;
-          console.log(m);
-          cb(true , m);
-        })
-        .catch((err) => {
-          var m = `error saving event : ${event} - sign up coz : ${err.message}`;
-          console.log(m);
-          //edit the events table to accept name of org instead of id ..
-          cb(false , m);
-        })
+      utils.createEvent(event, cb);
     }
   }
 }
