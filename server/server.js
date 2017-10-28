@@ -194,6 +194,7 @@ app.get('/orgs/deleteorg', (req, res) => {
     res.send(done ? {"done" : done} : {"error" : error});
   })
 });
+
 app.post('/orgs/signin', (req, res) => {
   if (!!req.session.name) {
     res.status(400); //401 : un authrized ...
@@ -212,6 +213,7 @@ app.post('/orgs/signin', (req, res) => {
     res.send(info);
   });
 });
+
 app.post('/orgs/signup', (req, res) => {
   orgsRouter['post']['/signup'](req, res, (done, message, missing) => {
     res.status(done ? 201 : 400);
@@ -259,16 +261,35 @@ app.get('/events', (req, res) => {
   });
 });
 
-app.get('/events/myevents', (req, res) => {
-  if (!req.session.username) {
+app.get('/events/orgevents', (req, res) => {
+  var re = {};
+  if (!req.session.name) {
     res.status(400);
-    return res.send({"found" : false , "message" : "sign in first"});
+    re.found = false;
+    re.message = "sign in first";
+    return res.send(re);
   } 
-  eventsRouter['get']['/myevents'](req, res, (done, events) => {
+  eventsRouter['get']['/orgevents'](req, res, (done, events, m) => {
     res.status(done ? ((events.length) ? 302 : 404 ) : 500);
     //302 : found , 404 : not found, 500 : intrnal server error
-    if (done) console.log(`found : ${events.length} events at /myevents`);
-    res.send(events);
+    re = (events.length) ? { events : events} : {message : m}; 
+    res.send(re);
+  });
+});
+
+app.get('/events/userevents', (req, res) => {
+  var re = {};
+  if (!req.session.username) {
+    res.status(400);
+    re.found = false;
+    re.message = "sign in first";
+    return res.send(re);
+  } 
+  eventsRouter['get']['/userevents'](req, res, (done, events) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    re = (done.length) ? { events : events} : {message : m}; 
+    res.send(re);
   });
 });
 
@@ -319,9 +340,9 @@ app.post('/admin/deleteEvent', (req, res) => {
   });
 });
 
-app.post('/admin/create', (req, res) => {
-  eventsRouter['admin']['/create'](req, res, (done, message) => {
-    res.status(done ? 201 : 400);
+app.post('/admin/createEvent', (req, res) => {
+  eventsRouter['admin']['/createEvent'](req, res, (done, message) => {
+    res.status(done ? 201 : 400); //400 : bad req , 201 : created
     res.send({"message" : message});
   });
 });

@@ -1,8 +1,11 @@
+//db
 const Events = require('../database/comp/events.js');
 const OrgsEvents = require('../database/comp/orgsevents.js');
 const Users = require('../database/comp/users.js');
 const Orgs = require('../database/comp/orgs.js');
 
+//utils
+const Orgs = require('./utils.js');
 
 module.exports = {
   get : {
@@ -16,16 +19,41 @@ module.exports = {
             cb(false, []);
           })
       },
-      '/myevents' : (req, res, cb) => {
-        var query = {}
-        var selector = req.session.type === 'user' ? "user_id" : "org_id"
-        query[selector] = selector === "user_id" ? req.session.userid : req.session.orgid;
-        OrgsEvents.find({where : query})
+      '/orgevents' : (req, res, cb) => {
+        Events.find({where : {"org_id" : req.session.orgid}})
           .then((events) => {
+            if (!events.length) {
+              return cb(true, [] , "no events found");
+            }
             cb(true, events);
           })
           .catch((err) => {
             cb(false, []);
+          })
+      },
+      '/userevents' : (req, res, cb) => {
+        var query = {}
+        var selector = req.session.type === 'user' ? "user_id" : "org_id"
+        query[selector] = selector === "user_id" ? req.session.userid : req.session.orgid;
+        OrgsEvents.find({where : query})
+          .then((connection) => {
+            var counter = connection.length;
+            if (counter) {
+              for (var i = 0; i < counter; i++) {
+                Events.find({where: {id : connnection.event_id}})
+                .then((ev) => {
+                  connection[i] = ev;
+                  if (!--counter) {
+                    cb(true, connection);
+                  }
+                })
+              }
+            } else {
+              cb(true, [] , "no events found for this user");
+            }
+          })
+          .catch((err) => {
+            cb(false, [] , err.message);
           })
       }
   },
@@ -103,7 +131,7 @@ module.exports = {
         cb(false, message);
       })
     },
-    '/create' : (req, res, cb) => {
+    '/createEvent' : (req, res, cb) => {
       var event = req.body;
       console.log('info of event to create : ', event);
       Events.build(event)
