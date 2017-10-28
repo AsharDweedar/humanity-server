@@ -137,6 +137,18 @@ app.post('/users/deleteuser', (req, res) => {
   })
 })
 
+app.post('/users/userbyid', (req, res) => {
+  if (!req.body.user_id) {
+    res.status(400);
+    console.log('find user for the id : ');
+    console.log(req.body);
+    return res.send({"error" : "send user_id please"});
+  }
+  usersRouter['post']['/userbyid'](req, res, (done, data) => {
+    console.log(data)
+    return !done ? res.send({"error" : data}) : res.send({"user" : data});
+  })
+})
 
 /***************************************************
 

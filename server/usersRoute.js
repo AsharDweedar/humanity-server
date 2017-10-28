@@ -133,5 +133,20 @@ module.exports = {
           cb(false, {message: m});
         })
     },
+    '/userbyid' : ({body}, res, cb) => {
+      Users.find({where : {id : body.user_id}})
+        .then((user) => {
+          res.status(!!user ? 302 : 404); //302 : found , 404 : not found
+          if (!user) return cb(false, "not founf in db");
+          console.log('found user' + user.username);
+          cb(true , user);
+        })
+        .catch((err) => {
+          res.status(500); //500 :server err
+          var m = "error finding because : " + err.message
+          console.log(m);
+          cb(false, m);
+        })
+    }
   }
 }

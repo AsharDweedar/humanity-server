@@ -129,13 +129,12 @@ module.exports = {
         .then((org) => {
           res.status(!!org ? 302 : 404); //302 : found , 404 : not found
           if (!org) return cb(false, "not founf in db");
-          console.log('found org');
-          console.log(org);
+          console.log('found org' + org.name);
           cb(true , org);
         })
         .catch((err) => {
           res.status(500); //500 :server err
-          var m = "error erasing because : " + err.message
+          var m = "error finding because : " + err.message
           console.log(m);
           cb(false, m);
         })
