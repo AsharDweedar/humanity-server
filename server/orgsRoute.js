@@ -2,11 +2,18 @@ const bcrypt = require('bcrypt');
 
 //utils
 const utils = require('./utils.js');
+const Orgs = utils.Orgs;
 
 module.exports = {
   get : {
     '/' : (req, res, cb) => {
-      utils.findOrgWhere({}, cb);
+      Orgs.findAll()
+        .then((org) => {
+          cb (true, org);
+        })
+        .catch(({message}) => {
+          cb (false, [], message);
+        })
     },
     '/signout' : (req, res, cb) => {
       req.session.destroy((err) => {

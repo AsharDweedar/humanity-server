@@ -93,16 +93,18 @@ app.get('/users/userinfo', (req, res) => {
     res.send(data);
   });
 });
+
 app.get('/users/deleteuser', (req, res) => {
   usersRouter['get']['/deleteuser'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
     res.send(done ? {"done" : done} : {"error" : error});
   })
 });
+
 app.post('/users/signin', (req, res) => {
   if (!!req.session.username) {
     res.status(400); //401 : un authrized ...
-    console.log('already signed in');
+    console.log('already signed in for : ' + req.session.username);
     return res.send({})
   }
   usersRouter['post']['/signin'](req, res, (info) => {
@@ -294,7 +296,7 @@ app.get('/events/userevents', (req, res) => {
     re.message = "sign in first";
     return res.send(re);
   } 
-  eventsRouter['get']['/userevents'](req, res, (done, events) => {
+  eventsRouter['get']['/userevents'](req, res, (done, events , m) => {
     res.status(done ? ((events.length) ? 302 : 404 ) : 500);
     //302 : found , 404 : not found, 500 : intrnal server error
     re = (done.length) ? { events : events} : {message : m}; 

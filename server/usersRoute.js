@@ -1,18 +1,17 @@
 const bcrypt = require('bcrypt');
 
-const Users = require('../database/comp/users.js');
+const utils = require('./utils.js');
+const Users = utils.Users;
 
 module.exports = {
   get : {
     '/' : (req, res, cb) => {
       Users.findAll()
-        .then((users) => {
-          console.log('found : ' , users.length , ' users ...');
-          cb(true, users);
+        .then((user) => {
+          cb (true, user);
         })
-        .catch((err) => {
-          console.log('error getting users : ' , err);
-          cb(false, []);
+        .catch(({message}) => {
+          cb (false, [], message);
         })
     },
     '/signout' : (req, res, cb) => {

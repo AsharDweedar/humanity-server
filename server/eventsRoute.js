@@ -1,5 +1,9 @@
 //utils
-const utils = require('./utils.js');
+const utils =  require('./utils.js');
+const Events = utils.Events;
+const OrgsEvents = utils.OrgsEvents;
+const Users = utils.Users;
+const Orgs = utils.Orgs;
 
 module.exports = {
   get : {

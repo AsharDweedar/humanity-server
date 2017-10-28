@@ -3,7 +3,58 @@ const OrgsEvents = require('../database/comp/orgsevents.js');
 const Users = require('../database/comp/users.js');
 const Orgs = require('../database/comp/orgs.js');
 
-exports.findOrgWhere = (query , cb) => {
+
+/************************************************/
+/*************                  *****************/
+/*************     users        *****************/
+/*************                  *****************/
+/************************************************/
+
+
+var findUserWhere = (query , cb) => {
+  Users.find(query)
+    .then((user) => {
+      cb (true, user);
+    })
+    .catch(({message}) => {
+      cb (false, [], message);
+    })
+}
+
+var deleteUser = (query, cb)  => {
+  Users.find(query)
+    .then((user) => {
+      if (!user) return cb(false, {message: "not founf in db"});
+      user.destroy({})
+      cb(true);
+    })
+    .catch((err) => {
+      var m = "error erasing because : " + err.message
+      console.log(m);
+      cb(false, {message: m});
+    })
+}
+
+var findUserEvents = (ID, cb) => {
+  // OrgsEvents.find({where : {"user_id" : ID}})
+  //   .then((events) => {
+  //     if (!events.length) {
+  //       return cb(true, [] , "no events found");
+  //     }
+  //     cb(true, events);
+  //   })
+  //   .catch((err) => {
+  //     cb(false, []);
+  //   })
+}
+
+/************************************************/
+/*************                  *****************/
+/*************       orgs       *****************/
+/*************                  *****************/
+/************************************************/
+
+var findOrgWhere = (query , cb) => {
   Orgs.find(query)
     .then((org) => {
       cb (true, org);
@@ -13,7 +64,7 @@ exports.findOrgWhere = (query , cb) => {
     })
 }
 
-exports.deleteOrg = (query, cb)  => {
+var deleteOrg = (query, cb)  => {
   Orgs.find(query)
     .then((org) => {
       if (!org) return cb(false, {message: "not founf in db"});
@@ -27,7 +78,7 @@ exports.deleteOrg = (query, cb)  => {
     })
 }
 
-exports.findOrgEvents = (ID, cb) => {
+var findOrgEvents = (ID, cb) => {
   Events.find({where : {"org_id" : ID}})
     .then((events) => {
       if (!events.length) {
@@ -48,7 +99,7 @@ exports.findOrgEvents = (ID, cb) => {
 /************************************************/
 
 
-exports.createEvent = (event, cb) => {
+var createEvent = (event, cb) => {
   Events.build(event)
     .save()
     .then((ev) => {
@@ -65,12 +116,12 @@ exports.createEvent = (event, cb) => {
 }
 
 
-exports.deleteEvent = ( event_id, cb) => {
+var deleteEvent = ( event_id, cb) => {
   Events.find({where :{"id" : event_id}})
     .then((event) => {
       event.destroy({})
         .then((connection) => {
-          this.deleteConnection({"id" : event_id}, cb);
+          deleteConnection({"id" : event_id}, cb);
         })
     })
     .catch(({message}) => {
@@ -78,7 +129,7 @@ exports.deleteEvent = ( event_id, cb) => {
     })
 }
 
-exports.deleteConnection = (query, cb) => {
+var deleteConnection = (query, cb) => {
   OrgsEvents.find({where : query})
     .then((connection) => {
       connection.destroy({});
@@ -88,3 +139,20 @@ exports.deleteConnection = (query, cb) => {
       cb(false, message);
     })
 }
+
+exports.Events = Events ;
+exports.OrgsEvents = OrgsEvents ;
+exports.Users = Users ;
+exports.Orgs = Orgs ;
+
+exports.findOrgWhere = findOrgWhere;
+exports.deleteOrg = deleteOrg;
+exports.findOrgEvents = findOrgEvents;
+
+exports.createEvent = createEvent;
+exports.deleteEvent = deleteEvent;
+exports.deleteConnection = deleteConnection;
+
+exports.findUserWhere = findUserWhere;
+exports.deleteUser = deleteUser;
+exports.findUserEvents = findUserEvents;
