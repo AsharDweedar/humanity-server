@@ -39,7 +39,7 @@ module.exports = {
     '/join' : (req, res, cb) => {
       var event = req.body;
       var user_id = req.session.userid;
-      var ev = {"event_id": event.id , "user_id": user_id};
+      var ev = {"event_id": event.id , "user_id": user_id, "org_id" : event.org_id};
       OrgsEvents.find({where : ev})
         .then((data) => {
           if (!!data) {
