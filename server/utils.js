@@ -36,16 +36,30 @@ var deleteUser = (query, cb)  => {
 }
 
 var findUserEvents = (ID, cb) => {
-  // OrgsEvents.find({where : {"user_id" : ID}})
-  //   .then((events) => {
-  //     if (!events.length) {
-  //       return cb(true, [] , "no events found");
-  //     }
-  //     cb(true, events);
-  //   })
-  //   .catch((err) => {
-  //     cb(false, []);
-  //   })
+  var all = [];
+  OrgsEvents.findAll({where : {user_id : ID }})
+  .then((connection) => {
+    var counter = connection.length;
+    console.log(counter , "connections were found ");
+    if (counter) {
+      for (var i = 0; i < counter; i++) {
+        Events.find({where: {id : connection[i].event_id}})
+        .then((ev) => {
+          console.log('event : ' , ev.name);
+          all.push(ev);
+          if (--counter === 0) {
+            cb(true, all);
+          }
+        })
+      }
+    } else {
+      OrgsEvents.findAll().then((d)=>{console.log(d)})
+      cb(true, [] , "no events found for this user");
+    }
+  })
+  .catch((err) => {
+    cb(false, [] , err.message);
+  })
 }
 
 /************************************************/

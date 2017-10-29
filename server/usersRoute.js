@@ -56,29 +56,34 @@ module.exports = {
     },
   },
   post : {
-    '/signin' : ({body}, res, cb) => {
+    '/signin' : ({body}, res, toServer) => {
       console.log(`user to users/signin :  ${body.username}`);
       Users.find({where : {username : body.username}})
         .then((dbUser) => {
           if (!dbUser || !dbUser.username) {
             res.status(400); //400 : bad request
-            return cb({});
+            return toServer({});
           }
           bcrypt.compare(body.password, dbUser.password , function (err, match) {
             console.log('signing in for : ', dbUser.username);
             if (match) {
               res.status(202);
-              cb(dbUser);
+              utils.findUserEvents(dbUser.id, (done, evs, m) => {
+                console.log('evs : ', evs);
+                console.log('m : ' , m );
+                dbUser.setDataValue ('events', evs);
+                toServer(dbUser);
+              })
             } else {
               res.status(400); //400 : bad request
-              return cb({});
+              return toServer({});
             }
           })
         })
         .catch((err) => {
           console.log('error sign in user : ', err.message);
           res.status(500); //500 : internal server error
-          cb({});          
+          toServer({});          
         })
     },
     '/signup' : (req, res, cb) => {

@@ -21,31 +21,7 @@ module.exports = {
         utils.findOrgEvents(req.session.orgid , cb);
       },
       '/userevents' : (req, res, cb) => {
-        var all = [];
-        OrgsEvents.findAll({where : {user_id : req.session.userid}})
-          .then((connection) => {
-            var counter = connection.length;
-            console.log(counter , "connections were found ");
-            console.log(connection.event_id);
-            if (counter) {
-              for (var i = 0; i < counter; i++) {
-                Events.find({where: {id : connection[i].event_id}})
-                .then((ev) => {
-                  console.log('event : ' , ev.name);
-                  all.push(ev);
-                  if (--counter === 0) {
-                    cb(true, all);
-                  }
-                })
-              }
-            } else {
-              OrgsEvents.findAll().then((d)=>{console.log(d)})
-              cb(true, [] , "no events found for this user");
-            }
-          })
-          .catch((err) => {
-            cb(false, [] , err.message);
-          })
+        utils.findUserEvents(req.session.userid , cb);
       }
   },
   post : {
