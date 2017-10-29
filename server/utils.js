@@ -100,8 +100,8 @@ var findOrgEvents = (ID, cb) => {
       }
       cb(true, events);
     })
-    .catch((err) => {
-      cb(false, []);
+    .catch(({message}) => {
+      cb(false, [] , message);
     })
 }
 

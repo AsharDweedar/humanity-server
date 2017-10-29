@@ -69,8 +69,8 @@ module.exports = {
             if (match) {
               res.status(202);
               utils.findUserEvents(dbUser.id, (done, evs, m) => {
-                console.log('evs : ', evs);
-                console.log('m : ' , m );
+                console.log('events found  : ', evs);
+                console.log('error messages : ' , m );
                 dbUser.setDataValue ('events', evs);
                 toServer(dbUser);
               })

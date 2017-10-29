@@ -35,29 +35,34 @@ module.exports = {
     },
   },
   post : {
-    '/signin' : ({body}, res, cb) => {
+    '/signin' : ({body}, res, toServer) => {
       console.log(`user to orgs/signin :  ${body}`);
       Orgs.find({where : {name : body.name}})
-        .then((dbOrgs) => {
-          if (!dbOrgs || !dbOrgs.name) {
+        .then((dbOrg) => {
+          if (!dbOrg || !dbOrg.name) {
             res.status(400); //400 : bad request
-            return cb({});
+            return toServer({});
           }
-          bcrypt.compare(body.password, dbOrgs.password , function (err, match) {
-            console.log('signing in for : ', dbOrgs.name);
+          bcrypt.compare(body.password, dbOrg.password , function (err, match) {
+            console.log('signing in for : ', dbOrg.name);
             if (match) {
               res.status(202);
-              cb(dbOrgs);
+              utils.findOrgEvents(dbOrg.id, (done, evs, m) => {
+                console.log('events found  : ', evs);
+                console.log('error messages : ' , m );
+                dbOrg.setDataValue ('events', evs);
+                toServer(dbOrg);
+              })
             } else {
               res.status(400); //400 : bad request
-              return cb({});
+              return toServer({});
             }
           })
         })
         .catch((err) => {
           console.log(err.message);
           res.status(500); //500 : internal server error
-          cb({});          
+          toServer({});          
         })
     },
     '/signup' : (req, res, cb) => {
