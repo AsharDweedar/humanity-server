@@ -48,7 +48,7 @@ describe('server' , () => {
           done();
         })
       }) // end it
-      xit('should create an event with signed-in org' , (donecreate) => {
+      it('should create an event with signed-in org' , (donecreate) => {
         requestWithSession({
           "uri":`${uri}events/create`,
           "method": "POST",
@@ -65,19 +65,19 @@ describe('server' , () => {
 
 
 
-    describe('/events/myevents' , () => {
+    describe('/events/orgevents' , () => {
       var optsSignin = {
         "uri" : `${uri}users/signin`,
         "method" : "POST",
         "json" : org
       }
-      it('should response with status 400 if requested /events/myevents with not-signed-in user' , (done) => {
+      it('should response with status 400 if requested /events/orgevents with not-signed-in user' , (done) => {
         request(`${uri}events/myevents`, (err, res, body) => {
           expect(res.statusCode).to.equal(400);
           done();
         })// request events/myevents  ***********************
       })//end it  events/myevents status 
-      xit('should get all events if requested /events/myevents with signed-in user' , (doneOfStoreevent) => {
+      xit('should get all events if requested /events/orgevents with signed-in user' , (doneOfStoreevent) => {
         request(`${uri}events`, function(error, res, body) {
           body = JSON.parse(body);
           var dbevent = body.reduce((acc, ele) => {

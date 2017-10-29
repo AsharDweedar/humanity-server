@@ -109,8 +109,8 @@ app.post('/users/signin', (req, res) => {
   }
   usersRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
-    console.log(`signing in for : ${info.username}`);
     if (!!info.username) {
+      console.log(`signing in for : ${info.username}`);
       req.session.username = info.username;
       req.session.password = info.password;
       req.session.userid = info.id;

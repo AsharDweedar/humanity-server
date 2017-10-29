@@ -62,10 +62,10 @@ module.exports = {
         .then((dbUser) => {
           if (!dbUser || !dbUser.username) {
             res.status(400); //400 : bad request
-            return toServer({});
+            return toServer({{"message" : "incorrect username"}});
           }
           bcrypt.compare(body.password, dbUser.password , function (err, match) {
-            console.log('signing in for : ', dbUser.username);
+            console.log('signing in for : ', dbUser.username , match);
             if (match) {
               res.status(202);
               utils.findUserEvents(dbUser.id, (done, evs, m) => {
@@ -76,14 +76,14 @@ module.exports = {
               })
             } else {
               res.status(400); //400 : bad request
-              return toServer({});
+              return toServer({"message" : "incorrect password"});
             }
           })
         })
         .catch((err) => {
           console.log('error sign in user : ', err.message);
           res.status(500); //500 : internal server error
-          toServer({});          
+          toServer({{"message" : "server error"}});          
         })
     },
     '/signup' : (req, res, cb) => {
