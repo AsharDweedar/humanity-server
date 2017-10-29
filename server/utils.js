@@ -53,7 +53,6 @@ var findUserEvents = (ID, cb) => {
         })
       }
     } else {
-      OrgsEvents.findAll().then((d)=>{console.log(d)})
       cb(true, [] , "no events found for this user");
     }
   })

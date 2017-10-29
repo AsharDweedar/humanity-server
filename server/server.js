@@ -105,7 +105,7 @@ app.post('/users/signin', (req, res) => {
   if (!!req.session.username) {
     res.status(400); //401 : un authrized ...
     console.log('already signed in for : ' + req.session.username);
-    return res.send({})
+    return res.send({"message" : "already signed in"})
   }
   usersRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....
@@ -210,7 +210,7 @@ app.post('/orgs/signin', (req, res) => {
   if (!!req.session.name) {
     res.status(400); //401 : un authrized ...
     console.log('already signed in for : ' + req.session.name);
-    return res.send({})
+    return res.send({"message" : "already signed in"})
   }
   orgsRouter['post']['/signin'](req, res, (info) => {
     //create the session here ....

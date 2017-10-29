@@ -70,7 +70,7 @@ module.exports = {
               res.status(202);
               utils.findUserEvents(dbUser.id, (done, evs, m) => {
                 console.log('events found  : ', evs);
-                console.log('error messages : ' , m );
+                console.log('messages : ' , m );
                 dbUser.setDataValue ('events', evs);
                 toServer(dbUser);
               })
