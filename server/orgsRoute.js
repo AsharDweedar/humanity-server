@@ -41,7 +41,7 @@ module.exports = {
         .then((dbOrg) => {
           if (!dbOrg || !dbOrg.name) {
             res.status(400); //400 : bad request
-            return toServer({});
+            return toServer({"message" : "incorrect username"});
           }
           bcrypt.compare(body.password, dbOrg.password , function (err, match) {
             console.log('signing in for : ', dbOrg.name);
@@ -55,14 +55,14 @@ module.exports = {
               })
             } else {
               res.status(400); //400 : bad request
-              return toServer({});
+              return toServer({"message" : "incorrect password"});
             }
           })
         })
         .catch((err) => {
           console.log(err.message);
           res.status(500); //500 : internal server error
-          toServer({});          
+          toServer({"message" : "server error"});          
         })
     },
     '/signup' : (req, res, cb) => {
