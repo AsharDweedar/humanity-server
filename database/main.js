@@ -12,7 +12,7 @@ const sequelize = new Sequelize("sql12201289", "sql12201289", "RImDWfyQF6" , {
   }
 });
 
-// const sequelize = new Sequelize("humanity", "root", "AS-har1passms" , {
+// const sequelize = new Sequelize("humanity", "root", "" , {
 //   host: "localhost",
 //   dialect: 'mysql',
 //   pool: {
