@@ -347,6 +347,9 @@ app.post('/events/join', (req, res) => {
 server 
 
 **************************************************/
+
+var utils = require('./utils.js');
+
 app.post('/admin/deleteEvent', (req, res) => {
   eventsRouter['admin']['/deleteEvent'](req, res, (done, message) => {
     res.send({"done" : done , "message" : message});
@@ -359,6 +362,54 @@ app.post('/admin/createEvent', (req, res) => {
     res.send({"message" : message});
   });
 });
+
+app.get('/isLoggedIn', (req, res) => {
+  if (!req.session || !req.session.type) {
+    return res.send(false);
+  }
+  if (req.session.type === "org") {
+    utils.findOrgWhere({where: {name: req.session.name}}, (found, [dbOrg]) => {
+      if (found) {
+        utils.findOrgEvents(dbOrg.id , (done, evArr, m) => {
+          if (done) {
+            dbOrg.setDataValue ('events', evArr);
+            res.send(dbOrg);
+          } else {
+            res.send(dbOrg);
+          }
+        })
+      } else {
+        res.status(500); //500 : server error
+        res.send({});
+      }
+    });
+  }
+  if (req.session.type === "user") {
+    utils.findUserWhere({where: {username: req.session.username}}, (found, [dbUser]) => {
+      console.log('1' , found);
+      console.log('2' , dbUser.name);
+      if (found) {
+        res.status(302);//302 : found
+        utils.findUserEvents(dbUser.id , (done, evArr, m) => {
+          console.log('3' , done);
+          console.log(evArr);
+          console.log('4' , m);
+          if (done) {
+            dbUser.setDataValue ('events', evArr);
+            res.send(dbUser);
+          } else {
+            res.send(dbUser);
+          }
+        })
+      } else {
+        res.status(500); //500 : server error
+        res.send({});
+      }
+    });
+  }
+});
+
+/************************************************************/
 
 var port = process.env.PORT || 3336
 var listener = app.listen(port , () => {
