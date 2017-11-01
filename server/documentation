@@ -1,27 +1,12 @@
-'/events'
+server files : 
+  - server.js
+  - eventsRout.js
+  - usersRout.js
+  - orgsRout.js
 
-  get : 
-    '/' : 
-
-    '/orgevents' : 
-      take org_id from req.session.orgid
-
-    '/userevents' : 
-      take usesr_id from req.session.userid
-
-  post : 
-
-    '/create' : 
-      take event from req.body;
-      take event.org_id from req.session.username;
-
-    '/delteevent' : 
-      take org_id from req.session.id;
-      take event_id from req.body.id;
-
-    '/join' : 
-      take event_id from req.body.id;
-      take user_id from req.session.id;
+/*******************************************************************/
+/*******************************************************************/
+/*******************************************************************/
 
 '/users'
 
@@ -51,6 +36,9 @@
     '/userbyid' :
       take user id from req.body.user_id
 
+/*******************************************************************/
+/*******************************************************************/
+/*******************************************************************/
 '/orgs' : 
 
   get : 
@@ -78,3 +66,30 @@
 
     '/orgbyid' : 
       take org id from req.body.org_id
+/*******************************************************************/
+/*******************************************************************/
+/*******************************************************************/
+'/events'
+
+  get : 
+    '/' : 
+
+    '/orgevents' : 
+      take org_id from req.session.orgid
+
+    '/userevents' : 
+      take usesr_id from req.session.userid
+
+  post : 
+
+    '/create' : 
+      take event from req.body;
+      take event.org_id from req.session.username;
+
+    '/delteevent' : 
+      take org_id from req.session.id;
+      take event_id from req.body.id;
+
+    '/join' : 
+      take event_id from req.body.id;
+      take user_id from req.session.id;

@@ -1,9 +1,11 @@
 //utils
 const utils =  require('./utils.js');
+
+//tables
 const Events = utils.Events;
 const OrgsEvents = utils.OrgsEvents;
-const Users = utils.Users;
-const Orgs = utils.Orgs;
+const Users = utils.Users; //not used 
+const Orgs = utils.Orgs;//not used
 
 module.exports = {
   get : {
@@ -57,16 +59,12 @@ module.exports = {
           res.status(500); //500 : server error
             cb(false, message);
           })
+    },
+    'bytime' : (req, res, cb) => {
+      
+    },
+    'bylocation' : (req, res, cb) => {
+      
     }
   },
-  admin : {
-    '/deleteEvent' : ({body : {event_id}}, res, cb) => {
-      utils.deleteEvent( event_id, cb);
-    },
-    '/createEvent' : (req, res, cb) => {
-      var event = req.body;
-      console.log('info of event to create : ', event);
-      utils.createEvent(event, cb);
-    }
-  }
 }

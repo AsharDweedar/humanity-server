@@ -157,19 +157,23 @@ var deleteConnection = (query, cb) => {
     })
 }
 
+//export tables
 exports.Events = Events ;
 exports.OrgsEvents = OrgsEvents ;
 exports.Users = Users ;
 exports.Orgs = Orgs ;
 
+//export orgs functions
 exports.findOrgWhere = findOrgWhere;
 exports.deleteOrg = deleteOrg;
 exports.findOrgEvents = findOrgEvents;
 
-exports.createEvent = createEvent;
-exports.deleteEvent = deleteEvent;
-exports.deleteConnection = deleteConnection;
-
+//export users functions
 exports.findUserWhere = findUserWhere;
 exports.deleteUser = deleteUser;
 exports.findUserEvents = findUserEvents;
+
+//export events functions
+exports.createEvent = createEvent;
+exports.deleteEvent = deleteEvent;
+exports.deleteConnection = deleteConnection;

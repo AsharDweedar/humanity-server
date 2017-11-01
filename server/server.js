@@ -344,24 +344,33 @@ app.post('/events/join', (req, res) => {
 
 /***************************************************
 
-server 
+admin
 
 **************************************************/
 
-var utils = require('./utils.js');
+var adminRouter = require('./adminRoute.js');
 
 app.post('/admin/deleteEvent', (req, res) => {
-  eventsRouter['admin']['/deleteEvent'](req, res, (done, message) => {
+  adminRouter['/deleteEvent'](req, res, (done, message) => {
     res.send({"done" : done , "message" : message});
   });
 });
 
 app.post('/admin/createEvent', (req, res) => {
-  eventsRouter['admin']['/createEvent'](req, res, (done, message) => {
+  adminRouter['/createEvent'](req, res, (done, message) => {
     res.status(done ? 201 : 400); //400 : bad req , 201 : created
     res.send({"message" : message});
   });
 });
+
+
+/***************************************************
+
+server 
+
+**************************************************/
+
+var utils = require('./utils.js');
 
 app.get('/isLoggedIn', (req, res) => {
   var obj = {}
