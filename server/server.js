@@ -267,8 +267,8 @@ var eventsRouter = require('./eventsRoute.js');
 app.get('/events', (req, res) => {
   eventsRouter['get']['/'](req, res, (done, events) => {
     res.status(done ? ((events.length) ? 302 : 404 ) : 500);
-    if (done) console.log('found : ' + events.length + ' events !!!!');
     //302 : found , 404 : not found, 500 : intrnal server error
+    if (done) console.log('found : ' + events.length + ' events !!!!');
     res.send(events);
   });
 });
@@ -292,7 +292,7 @@ app.get('/events/orgevents', (req, res) => {
 app.get('/events/userevents', (req, res) => {
   var re = {};
   if (!req.session.username) {
-    res.status(400);
+    res.status(400); //400: bad request
     re.found = false;
     re.message = "sign in first";
     return res.send(re);
@@ -313,7 +313,7 @@ app.post('/events/create', (req, res) => {
     return res.send({message : "sign in as organisation first !!"})
   }
   eventsRouter['post']['/create'](req, res, (done, message) => {
-    res.status(done ? 201 : 400);
+    res.status(done ? 201 : 400); //201: created , 400 : bad request
     res.send({"message" : message});
   });
 });
@@ -325,7 +325,7 @@ app.post('/events/deleteevent', (req, res) => {
     return res.send({message : "sign in as organisation first !!"})
   }
   eventsRouter['post']['/deleteevent'](req, res, (done, message) => {
-    res.status(done ? 201 : 400);
+    res.status(done ? 201 : 400);//201: created , 400 : bad request
     res.send({"done" : done , "message" : message});
   });
 });
@@ -341,6 +341,21 @@ app.post('/events/join', (req, res) => {
   });
 });
 
+app.post('/events/bytime', (req, res) => {
+  eventsRouter['post']['/bytime'](req, res, (done, events, message) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    res.send({"done" : done , "events": events,"message" : message});
+  });
+});
+
+app.post('/events/bylocation', (req, res) => {
+  eventsRouter['post']['/bylocation'](req, res, (done, events, message) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    res.send({"done" : done , "events": events,"message" : message});
+  });
+});
 
 /***************************************************
 

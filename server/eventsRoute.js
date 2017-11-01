@@ -60,11 +60,41 @@ module.exports = {
             cb(false, message);
           })
     },
-    'bytime' : (req, res, cb) => {
-      
+    'bytime' : ({body: {after , before}}, res, cb) => {
+      if (after) {
+        var timeA = after.split(' ');
+        timeFormate = timeA[0] + "T" + timeA[1] + ".000Z";
+      }
+      if (before) {
+        var timeB = before.split(' ');
+        timeFormate = timeB[0] + "T" + timeB[1] + ".000Z";
+      }
+      var query = {where : {}};
+      if (after && before) {
+        query.where = {
+          time : {
+            $lt : before,
+            $gt : after
+          }
+        }
+      } else if (after) {
+        query.where = {
+          time: {
+            $gt: after
+          }
+        }
+      } else {
+        query.where = {
+          time: {
+            $lt: before
+          }
+        }
+      }
+      utils.findEventWhere(query, cb);
     },
-    'bylocation' : (req, res, cb) => {
-      
+    'bylocation' : ({body}, res, cb) => {
+      var query = {where : {loaction : body}};
+      utils.findEventWhere(query, cb);
     }
   },
 }

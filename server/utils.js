@@ -112,6 +112,20 @@ var findOrgEvents = (ID, cb) => {
 /************************************************/
 
 
+var findEventWhere = (query, cb) { //done , evs , m
+  Events.findAll(query)
+    .then((evs) => {
+      if (evs && evs.length) {
+        cb (true, evs, "found");
+      } else {
+        cb (true, [], "no events match query");
+      }
+    })
+    .catch(({message}) => {
+      cb (false, [], "server error");
+    })
+}
+
 var createEvent = (event, cb) => {
   Events.build(event)
     .save()
@@ -174,6 +188,7 @@ exports.deleteUser = deleteUser;
 exports.findUserEvents = findUserEvents;
 
 //export events functions
+exports.findEventWhere = findEventWhere;
 exports.createEvent = createEvent;
 exports.deleteEvent = deleteEvent;
 exports.deleteConnection = deleteConnection;
