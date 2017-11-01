@@ -94,3 +94,11 @@ server files :
     '/join' : 
       take event_id from req.body.id;
       take user_id from req.session.id;
+
+    '/bytime' : 
+      (one of the next or both) :
+      - take after from req.body.after (optional);     
+      - take before from req.body.before (optional);     
+    
+    '/bylocation' : 
+      take location from req.body.location ;
