@@ -129,12 +129,13 @@ var createEvent = (event, cb) => {
 }
 
 
-var deleteEvent = ( event_id, cb) => {
+var deleteEvent = (event_id, cb) => {
   Events.find({where :{"id" : event_id}})
     .then((event) => {
       event.destroy({})
         .then((connection) => {
-          deleteConnection({"id" : event_id}, cb);
+          deleteConnection({"event_id" : event_id}, cb);
+          cb(true,"done deleting event and it's connections");
         })
     })
     .catch(({message}) => {

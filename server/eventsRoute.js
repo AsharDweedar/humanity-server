@@ -27,7 +27,7 @@ module.exports = {
   post : {
     '/create' : (req, res, cb) => {
       var event = req.body;
-      event.org_id = req.session.id;
+      event.org_id = req.session.orgid;
       console.log('info of event to create : ', event);
       utils.createEvent(event, cb);
     },
@@ -60,8 +60,8 @@ module.exports = {
     }
   },
   admin : {
-    '/deleteEvent' : ({body : {org_id  , event_id}}, res, cb) => {
-      utils.deleteEvent(org_id, event_id, cb);
+    '/deleteEvent' : ({body : {event_id}}, res, cb) => {
+      utils.deleteEvent( event_id, cb);
     },
     '/createEvent' : (req, res, cb) => {
       var event = req.body;

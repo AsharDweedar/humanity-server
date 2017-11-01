@@ -167,8 +167,8 @@ app.get('/orgs', (req, res) => {
   });
 })
 app.get('/orgs/signout', (req, res) => {
-  console.log('signing out for : ', req.session.username)
-  if (req.session.username) {
+  console.log('signing out for : ', req.session.name)
+  if (req.session.name) {
     orgsRouter['get']['/signout'](req, res, (done) => {
       res.status(done ? 202 : 501); 
       //202 : accepted , 501 : internal server error => not implemented
@@ -364,46 +364,44 @@ app.post('/admin/createEvent', (req, res) => {
 });
 
 app.get('/isLoggedIn', (req, res) => {
+  var obj = {}
   if (!req.session || !req.session.type) {
-    return res.send(false);
+    obj.isLoggedIn = false;
+    obj.type = "";
+    return res.send(obj);
   }
+  obj.isLoggedIn = true;
   if (req.session.type === "org") {
+    obj.type = "org";
     utils.findOrgWhere({where: {name: req.session.name}}, (found, [dbOrg]) => {
       if (found) {
         utils.findOrgEvents(dbOrg.id , (done, evArr, m) => {
           if (done) {
             dbOrg.setDataValue ('events', evArr);
-            res.send(dbOrg);
-          } else {
-            res.send(dbOrg);
-          }
+          } 
+          obj.data = dbOrg.dataValues;
+          res.send(obj);
         })
       } else {
         res.status(500); //500 : server error
-        res.send({});
+        res.send(obj);
       }
     });
   }
   if (req.session.type === "user") {
+    obj.type = "user";
     utils.findUserWhere({where: {username: req.session.username}}, (found, [dbUser]) => {
-      console.log('1' , found);
-      console.log('2' , dbUser.name);
       if (found) {
-        res.status(302);//302 : found
         utils.findUserEvents(dbUser.id , (done, evArr, m) => {
-          console.log('3' , done);
-          console.log(evArr);
-          console.log('4' , m);
           if (done) {
             dbUser.setDataValue ('events', evArr);
-            res.send(dbUser);
-          } else {
-            res.send(dbUser);
-          }
+          } 
+          obj.data = dbUser.dataValues;
+          res.send(obj);
         })
       } else {
         res.status(500); //500 : server error
-        res.send({});
+        res.send(obj);
       }
     });
   }
