@@ -60,14 +60,14 @@ module.exports = {
             cb(false, message);
           })
     },
-    'bytime' : ({body: {after , before}}, res, cb) => {
+    '/bytime' : ({body: {after , before}}, res, cb) => {
       if (after) {
         var timeA = after.split(' ');
-        timeFormate = timeA[0] + "T" + timeA[1] + ".000Z";
+        timeFormate = timeA[0] + "T" + timeA[1] + ":00.000Z";
       }
       if (before) {
         var timeB = before.split(' ');
-        timeFormate = timeB[0] + "T" + timeB[1] + ".000Z";
+        timeFormate = timeB[0] + "T" + timeB[1] + ":00.000Z";
       }
       var query = {where : {}};
       if (after && before) {
@@ -92,8 +92,8 @@ module.exports = {
       }
       utils.findEventWhere(query, cb);
     },
-    'bylocation' : ({body}, res, cb) => {
-      var query = {where : {loaction : body}};
+    '/bylocation' : ({body : {location}}, res, cb) => {
+      var query = { where: { location: location}};
       utils.findEventWhere(query, cb);
     }
   },

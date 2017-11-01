@@ -112,7 +112,7 @@ var findOrgEvents = (ID, cb) => {
 /************************************************/
 
 
-var findEventWhere = (query, cb) { //done , evs , m
+var findEventWhere = (query, cb) => { //done , evs , m
   Events.findAll(query)
     .then((evs) => {
       if (evs && evs.length) {
@@ -122,7 +122,7 @@ var findEventWhere = (query, cb) { //done , evs , m
       }
     })
     .catch(({message}) => {
-      cb (false, [], "server error");
+      cb (false, [], message);
     })
 }
 
