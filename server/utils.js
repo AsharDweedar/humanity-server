@@ -12,12 +12,18 @@ const Orgs = require('../database/comp/orgs.js');
 
 
 var findUserWhere = (query , cb) => {
-  Users.findAll(query)
+  Users.find(query)
     .then((user) => {
-      cb (true, user);
+      if (user) {
+        return findUserEvents(user.id, (done, evs, m) => {
+          user.setDataValue('events', evs);
+          cb(done, user, m);
+        });
+      }
+      cb(true, null, "no users matched");
     })
-    .catch(({message}) => {
-      cb (false, [], message);
+    .catch(({ message }) => {
+      cb(false, {}, message);
     })
 }
 
@@ -68,12 +74,18 @@ var findUserEvents = (ID, cb) => {
 /************************************************/
 
 var findOrgWhere = (query , cb) => {
-  Orgs.findAll(query)
+  Orgs.find(query)
     .then((org) => {
-      cb (true, org);
+      if (org) {
+        return findOrgEvents(org.id, (done, evs, m) => {
+          org.setDataValue('events', evs);
+          cb(done, org, m);
+        });
+      }
+      cb (true, null, "no orgs matched");
     })
     .catch(({message}) => {
-      cb (false, [], message);
+      cb (false, {}, message);
     })
 }
 
@@ -112,7 +124,7 @@ var findOrgEvents = (ID, cb) => {
 /************************************************/
 
 
-var findEventWhere = (query, cb) => { //done , evs , m
+var findEventWhere = (query, cb) => { 
   Events.findAll(query)
     .then((evs) => {
       if (evs && evs.length) {

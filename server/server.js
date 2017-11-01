@@ -64,7 +64,7 @@ app.get('/', (req, res) => {
 
 var usersRouter = require('./usersRoute.js');
 app.get('/users', (req, res) => {
-  usersRouter['get']['/'](req, res, (done, users) => {
+  usersRouter['get']['/'](req, res, (done, users, m) => {
     res.status(done ? ((users.length) ? 302 : 404 ) : 500);
     //302 : found , 404 : not found, 500 : intrnal server error
     res.send(users);
@@ -89,13 +89,15 @@ app.get('/users/userinfo', (req, res) => {
     res.status(401);//401 : not authrised
     return res.send({"found" : false , "message" : "not signed in"});
   } 
-  usersRouter['get']['/userinfo'](req, res, (data) => {
-    res.send(data);
+  usersRouter['get']['/userinfo'](req, res, (done, user, m) => {
+    var st = done ? (user !== null ? 302 : 404) : 500;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.send({ "found": done, "user": user, "message": m })
   });
 });
 
-app.get('/users/deleteuser', (req, res) => {
-  usersRouter['get']['/deleteuser'](req, res, (done, err) => {
+app.get('/users/deletemyaccount', (req, res) => {
+  usersRouter['get']['/deletemyaccount'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
     res.send(done ? {"done" : done} : {"error" : error});
   })
@@ -131,12 +133,6 @@ app.post('/users/signup', (req, res) => {
     res.send(obj);
   });
 });
-app.post('/users/deleteuser', (req, res) => {
-  usersRouter['post']['/deleteuser'](req, res, (done, err) => {
-    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send(done ? {"done" : done} : {"error" : err});
-  })
-})
 
 app.post('/users/userbyid', (req, res) => {
   if (!req.body.user_id) {
@@ -160,7 +156,7 @@ orgs router from here
 
 var orgsRouter = require('./orgsRoute.js');
 app.get('/orgs', (req, res) => {
-  orgsRouter['get']['/'](req, res, (done, orgs) => {
+  orgsRouter['get']['/'](req, res, (done, orgs,m) => {
     res.status(done ? ((orgs.length) ? 302 : 404 ) : 500);
     //302 : found , 404 : not found, 500 : intrnal server error
     res.send(orgs);
@@ -182,27 +178,21 @@ app.get('/orgs/signout', (req, res) => {
 });
 
 app.get('/orgs/orginfo', (req, res) => {
-  if (!req.session.username) {
+  if (!req.session || !req.session.name) {
     res.status(400);//400 : bad request
     return res.send({"found" : false , "message" : "not signed in"});
   } 
-  orgsRouter['get']['/orginfo'](req, res, (done, org) => {
-          if (done) {
-            res.status(302); //302 : found
-            res.send({"found" : true , "org" : org});
-          } else {
-            res.status(404); //404 : not found
-            res.send({"found" : false , "message" : "not found"})
-          }
-          res.status(500); //500 : internal server error
-          res.send({"found" : false , "message" : "server error"});
-      });
+  orgsRouter['get']['/orginfo'](req, res, (done, org, m) => {
+    var st = done ? (org !== null ? 302 : 404 ) : 500 ;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.send({ "found": done, "org": org, "message" : m})
+  });
 });
 
-app.get('/orgs/deleteorg', (req, res) => {
-  orgsRouter['get']['/deleteorg'](req, res, (done, err) => {
+app.get('/orgs/deletemyaccount', (req, res) => {
+  orgsRouter['get']['/deletemyaccount'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send(done ? {"done" : done} : {"error" : error});
+    res.send({"done" : done , "error" : err});
   })
 });
 
@@ -236,12 +226,7 @@ app.post('/orgs/signup', (req, res) => {
     res.send(obj);
   });
 });
-app.post('/orgs/deleteorg', (req, res) => {
-  orgsRouter['post']['/deleteorg'](req, res, (done, err) => {
-    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send(done ? {"done" : done} : {"error" : err});
-  })
-});
+
 app.post('/orgs/orgbyid', (req, res) => {
   if (!req.body.org_id) {
     res.status(400);
@@ -377,6 +362,21 @@ app.post('/admin/createEvent', (req, res) => {
     res.send({"message" : message});
   });
 });
+
+
+app.post('/admin/deleteorg', (req, res) => {
+  adminRouter['/deleteorg'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? { "done": done } : { "error": error });
+  })
+});
+
+app.post('/admin/deleteuser', (req, res) => {
+  adminRouter['/deleteuser'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? { "done": done } : { "error": err });
+  })
+})
 
 
 /***************************************************

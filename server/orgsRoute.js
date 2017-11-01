@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-//utils
+//utils 
 const utils = require('./utils.js');
 const Orgs = utils.Orgs;
 
@@ -9,10 +9,11 @@ module.exports = {
     '/' : (req, res, cb) => {
       Orgs.findAll()
         .then((org) => {
-          cb (true, org);
+          if (org) {return cb(done, org, m)}
+          cb(true, [], "no orgs matched");
         })
-        .catch(({message}) => {
-          cb (false, [], message);
+        .catch(({ message }) => {
+          cb(false, [], message);
         })
     },
     '/signout' : (req, res, cb) => {
@@ -26,10 +27,10 @@ module.exports = {
       })
     },
     '/orginfo' : (req, res, cb) => {
-      var orgName = req.session.username;
+      var orgName = req.session.name;
       utils.findOrgWhere({ where : {name : orgName}}, cb);
     },
-    '/deleteorg' : (req, res, cb) => {
+    '/deletemyaccount' : (req, res, cb) => {
       var orgName = req.session.name;
       utils.deleteOrg({where: {name: orgName}}, cb);
     },
@@ -94,23 +95,8 @@ module.exports = {
           })
       })
     },
-    '/deleteorg' : ({body : {name}}, res, cb) => {
-      utils.deleteOrg({where: {name: name}}, cb);
-    },
     '/orgbyid' : ({body}, res, cb) => {
-      Orgs.find({where : {id : body.org_id}})
-        .then((org) => {
-          res.status(!!org ? 302 : 404); //302 : found , 404 : not found
-          if (!org) return cb(false, "not founf in db");
-          console.log('found org' + org.name);
-          cb(true , org);
-        })
-        .catch((err) => {
-          res.status(500); //500 :server err
-          var m = "error finding because : " + err.message;
-          console.log(m);
-          cb(false, m);
-        })
+      utils.findOrgWhere({ where: { id: body.org_id } }, cb);
     }
   }
 }
