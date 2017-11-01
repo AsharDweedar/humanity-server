@@ -132,10 +132,10 @@ var createEvent = (event, cb) => {
 var deleteEvent = (event_id, cb) => {
   Events.find({where :{"id" : event_id}})
     .then((event) => {
+      if (event === null) {return cb (false , "event doesn't exist")}
       event.destroy({})
         .then((connection) => {
           deleteConnection({"event_id" : event_id}, cb);
-          cb(true,"done deleting event and it's connections");
         })
     })
     .catch(({message}) => {
@@ -146,8 +146,11 @@ var deleteEvent = (event_id, cb) => {
 var deleteConnection = (query, cb) => {
   OrgsEvents.findAll({where : query})
     .then((connection) => {
+      if (connection === null) {
+        cb(true,"done deleting event and no connections were found");
+      } 
       connection.destroy({});
-      cb(true);
+      cb(true, "done deleting event and it's connections");
     })
     .catch(({message}) => {
       cb(false, message);
