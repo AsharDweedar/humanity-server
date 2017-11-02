@@ -72,7 +72,7 @@ module.exports = {
     '/signup' : (req, res, cb) => {
       var org = req.body;
       console.log('info of org to signup : ', org.name);
-      bcrypt.hash(org.password, 10 , function (err , hash) {
+      bcrypt.hash(org.password, 10 , function (err, hash) {
         org.password = hash;
         Orgs.build(org)
           .save()
