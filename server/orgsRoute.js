@@ -37,34 +37,39 @@ module.exports = {
   },
   post : {
     '/signin' : ({body}, res, toServer) => {
-      console.log(`user to orgs/signin :  ${body}`);
-      Orgs.find({where : {name : body.name}})
-        .then((dbOrg) => {
+      console.log(`user to orgs/signin :  ${body.name}`);
+      Orgs.find({ where: { name: body.name } })
+        .then(dbOrg => {
           if (!dbOrg || !dbOrg.name) {
             res.status(400); //400 : bad request
-            return toServer({"message" : "incorrect username"});
+            return toServer({ message: "incorrect username" });
           }
-          bcrypt.compare(body.password, dbOrg.password , function (err, match) {
-            console.log('signing in for : ', dbOrg.name);
+          bcrypt.compare(body.password, dbOrg.password, function(
+            err,
+            match
+          ) {
+            console.log("signing in for : ", dbOrg.name);
             if (match) {
               res.status(202);
               utils.findOrgEvents(dbOrg.id, (done, evs, m) => {
-                console.log('events found  : ', evs);
-                console.log('error messages : ' , m );
-                dbOrg.setDataValue ('events', evs);
+                console.log("events found  : ", evs.length);
+                console.log("error messages : ", m);
+                dbOrg.setDataValue("events", evs);
                 toServer(dbOrg);
-              })
+              });
             } else {
               res.status(400); //400 : bad request
-              return toServer({"message" : "incorrect password"});
+              return toServer({ message: "incorrect password" });
             }
-          })
+          });
         })
-        .catch((err) => {
-          console.log(err.message);
+        .catch(({ message }) => {
+          console.log(message);
           res.status(500); //500 : internal server error
-          toServer({"message" : "server error"});          
-        })
+          toServer({
+                     message: message;
+                   });
+        });
     },
     '/signup' : (req, res, cb) => {
       var org = req.body;

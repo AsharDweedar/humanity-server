@@ -142,7 +142,7 @@ app.post('/users/userbyid', (req, res) => {
     return res.send({"error" : "send user_id please"});
   }
   usersRouter['post']['/userbyid'](req, res, (done, data) => {
-    console.log(data)
+    console.log("user by id : ", data.name);
     return !done ? res.send({"error" : data}) : res.send({"user" : data});
   })
 })
@@ -230,12 +230,12 @@ app.post('/orgs/signup', (req, res) => {
 app.post('/orgs/orgbyid', (req, res) => {
   if (!req.body.org_id) {
     res.status(400);
-    console.log('find org for the id : ');
+    console.log('find org (bad request) for the body : ');
     console.log(req.body);
     return res.send({"error" : "send org_id please"});
   }
   orgsRouter['post']['/orgbyid'](req, res, (done, data) => {
-    console.log(data)
+    console.log('data found for : ' , data.name);
     return !done ? res.send({"error" : data}) : res.send({"org" : data});
   })
 })
