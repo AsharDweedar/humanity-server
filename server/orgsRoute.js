@@ -66,9 +66,7 @@ module.exports = {
         .catch(({ message }) => {
           console.log(message);
           res.status(500); //500 : internal server error
-          toServer({
-                     message: message;
-                   });
+          toServer({ message: message });
         });
     },
     '/signup' : (req, res, cb) => {
