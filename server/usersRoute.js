@@ -17,14 +17,7 @@ module.exports = {
         })
     },
     '/signout' : (req, res, cb) => {
-      req.session.destroy((err) => {
-        if (err) {
-          console.log('error destroying session !! , error message : ' , err.message);
-          cb(false);
-        } else {
-          cb(true);
-        }
-      })
+      utils.signout(req, res, cb);
     },
     '/userinfo' : (req, res, cb) => {
       var userName = req.session.username;
@@ -100,6 +93,55 @@ module.exports = {
     },
     '/userbyid' : ({body}, res, cb) => {
       utils.findUserWhere({ where: { id: body.user_id } }, cb);
+    },
+  },
+  put : {
+    "/editprofile" : (req, res, cb) => {
+      var {body : {username, password, email}, session : {userid}} = req;
+      if (!username && !password && !email) {
+        return cb (true, null, "no data provided");
+      }
+      Users.find({ where: { id: userid } })
+        .then((user) => {
+          if (!user) {
+            return cb(false, null, "not found in db");
+          }
+          if (username) {
+            user.setDataValue('username', username);
+            req.session.username = username;
+          }
+          if (email) {
+            user.setDataValue("email", email);
+          }
+          if (password) {
+            return bcrypt.hash(password, 10 , function (err , hash) {
+              user.setDataValue("password", hash);
+              user.save()
+                .then((data) => {
+                  console.log(data);
+                  utils.findUserEvents(userid, (done, evs) => {
+                    if (evs && evs.length) {
+                      user.setDataValue('events', evs);
+                    }
+                    cb(true, user, "data updated");
+                  })
+                })
+                .catch(({message}) => {
+                  cb(false, null, message);
+                });
+            });
+          } else {
+            user.save()
+              .then((date) => {
+                utils.findUserEvents(userid, (done, evs) => {
+                  if (evs && evs.length) {
+                    user.setDataValue("events", evs);
+                  }
+                  cb(true, user, "data updated");
+                });
+              });
+          }
+        });
     }
   }
 }

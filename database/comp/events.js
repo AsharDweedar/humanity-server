@@ -10,14 +10,25 @@ var schema = sequelize.define('Events', {
   description: {
     type: Sequelize.STRING
   },
-  location:{
+  location: {
   	type:Sequelize.STRING
   },
   time: {
     type:Sequelize.DATE
   },
-  org_id:{
+  duration: {
+    type:Sequelize.TIME,
+  },
+  org_id: {
   	type:Sequelize.STRING
+  },
+  rate: {
+    type:Sequelize.DECIMAL,
+    allowNull: false,
+    defaultValue: 0,
+  },
+  volunteers: {
+    type:Sequelize.INTEGER,
   }
 });
 

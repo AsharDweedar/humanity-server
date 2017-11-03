@@ -18,14 +18,7 @@ module.exports = {
         })
     },
     '/signout' : (req, res, cb) => {
-      req.session.destroy((err) => {
-        if (err) {
-          console.log('error destroying session !! , error message : ' , err.message);
-          cb(false);
-        } else {
-          cb(true);
-        }
-      })
+      utils.signout(req, res, cb);
     },
     '/orginfo' : (req, res, cb) => {
       var orgName = req.session.name;
@@ -43,7 +36,7 @@ module.exports = {
         .then(dbOrg => {
           if (!dbOrg || !dbOrg.name) {
             res.status(400); //400 : bad request
-            return toServer({ message: "incorrect username" });
+            return toServer({ message: "incorrect name" });
           }
           bcrypt.compare(body.password, dbOrg.password, function(
             err,
@@ -101,6 +94,68 @@ module.exports = {
     },
     '/orgbyid' : ({body}, res, cb) => {
       utils.findOrgWhere({ where: { id: body.org_id } }, cb);
+    }
+  },
+  put : {
+    "/editprofile" : (req, res, cb) => {
+      var { body: { name, password, email, description }, session: { orgid } } = req;
+      console.log ("name" , "password" , "email" , "description") ;
+      console.log (name , password , email , description) ;
+      if (!name && !password && !email && !description) {
+        return cb (true, null, "no data provided");
+      }
+      Orgs.find({ where: { id: orgid } })
+        .then((org) => {
+          if (!org) {
+            return cb(false, null, "not found in db");
+          }
+          if (name) {
+            org.setDataValue('name', name);
+            req.session.name = name;
+          }
+          if (email) {
+            org.setDataValue("email", email);
+          }
+          if (description) {
+            org.setDataValue("description", description);
+          }
+          if (password) {
+            return bcrypt.hash(password, 10 , function (err , hash) {
+              org.setDataValue("password", hash);
+              org.save()
+                .then((data) => {
+                  console.log(data);
+                  utils.findOrgEvents(orgid, (done, evs) => {
+                    if (evs && evs.length) {
+                      org.setDataValue('events', evs);
+                    }
+                    cb(true, org, "data updated");
+                  })
+                })
+                .catch(({message}) => {
+                  console.log("error message :");
+                  console.log(message);
+                  cb(false, null, message);
+                });
+            });
+          } else {
+            org
+              .save()
+              .then(date => {
+                utils.findOrgEvents(orgid, (done, evs) => {
+                  if (evs && evs.length) {
+                    org.setDataValue("events", evs);
+                  }
+                  cb(true, org, "data updated");
+                });
+              })
+              .catch(({ message }) => {
+                console.log("error message :");
+                console.log(message);
+                cb(false, null, message);
+              })
+          }
+        });
     }
   }
 }

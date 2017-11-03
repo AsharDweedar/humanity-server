@@ -92,11 +92,16 @@ app.get('/users/userinfo', (req, res) => {
   usersRouter['get']['/userinfo'](req, res, (done, user, m) => {
     var st = done ? (user !== null ? 302 : 404) : 500;
     //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
     res.send({ "found": done, "user": user, "message": m })
   });
 });
 
 app.get('/users/deletemyaccount', (req, res) => {
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : not authrised
+    return res.send({ found: false, message: "not signed in" });
+  }
   usersRouter['get']['/deletemyaccount'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
     res.send(done ? {"done" : done} : {"error" : error});
@@ -114,7 +119,6 @@ app.post('/users/signin', (req, res) => {
     if (!!info.username) {
       console.log(`signing in for : ${info.username}`);
       req.session.username = info.username;
-      req.session.password = info.password;
       req.session.userid = info.id;
       req.session.type = "user";
       console.log('session : ', req.session);
@@ -146,6 +150,21 @@ app.post('/users/userbyid', (req, res) => {
     return !done ? res.send({"error" : data}) : res.send({"user" : data});
   })
 })
+
+app.put('/users/editprofile', (req, res) => {
+  if (!req.session && !req.session.username) {
+    res.status(401); // 401 : not authorized
+    return res.send({"done" : false , "message" : "not signed in as user"});
+  }
+  usersRouter['put']['/editprofile'](req, res, (done, data, message) => {
+    console.log('recieved from routers : ',done );
+    var st = done ? (data !== null ? 202 : 400) : 500;
+    //202 : updated , 400 : bad request,500 : internal server error
+    console.log(message);
+    res.status(st);
+    res.send({"done": done, "data": data, "message": message});
+  });
+});
 
 /***************************************************
 
@@ -185,6 +204,7 @@ app.get('/orgs/orginfo', (req, res) => {
   orgsRouter['get']['/orginfo'](req, res, (done, org, m) => {
     var st = done ? (org !== null ? 302 : 404 ) : 500 ;
     //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
     res.send({ "found": done, "org": org, "message" : m})
   });
 });
@@ -207,7 +227,6 @@ app.post('/orgs/signin', (req, res) => {
     console.log(`signing in for : ${info.name}`);
     if (!!info.name) {
       req.session.name = info.name;
-      req.session.password = info.password;
       req.session.orgid = info.id;
       req.session.type = "org";
       console.log('session : ', req.session);
@@ -240,6 +259,21 @@ app.post('/orgs/orgbyid', (req, res) => {
   })
 })
 
+
+app.put("/orgs/editprofile", (req, res) => {
+  if (!req.session && !req.session.name) {
+    res.status(401); // 401 : not authorized
+    return res.send({ done: false, message: "not signed in as org" });
+  }
+  orgsRouter["put"]["/editprofile"](req, res, (done, data, message) => {
+    console.log("recieved from routers 'orgs/editprofile' : ", done);
+    var st = done ? (data !== null ? 202 : 400) : 500;
+    //202 : updated , 400 : bad request,500 : internal server error
+    console.log(message);
+    res.status(st);
+    res.send({ done: done, data: data, message: message });
+  });
+});
 
 /***************************************************
 

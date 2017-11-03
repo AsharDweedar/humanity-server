@@ -19,7 +19,7 @@ var schema = sequelize.define('Orgs', {
     allowNull: false
   },
   rate:{
-  	type:Sequelize.DECIMAL
+  	type:Sequelize.DECIMAL,
   } 
 });
 

@@ -23,7 +23,7 @@ var findUserWhere = (query , cb) => {
       cb(true, null, "no users matched");
     })
     .catch(({ message }) => {
-      cb(false, {}, message);
+      cb(false, null, message);
     })
 }
 
@@ -85,7 +85,7 @@ var findOrgWhere = (query , cb) => {
       cb (true, null, "no orgs matched");
     })
     .catch(({message}) => {
-      cb (false, {}, message);
+      cb (false, null, message);
     })
 }
 
@@ -186,6 +186,25 @@ var deleteConnection = (query, cb) => {
 
 /************************************************/
 /*************                  *****************/
+/*************     common      *****************/
+/*************                  *****************/
+/************************************************/
+
+var signout = function (req, res, cb) {
+  req.session.destroy(err => {
+    if (err) {
+      console.log("error destroying session !! , error message : ", err.message);
+      cb(false);
+    } else {
+      cb(true);
+    }
+  });
+}
+
+
+
+/************************************************/
+/*************                  *****************/
 /*************     exports      *****************/
 /*************                  *****************/
 /************************************************/
@@ -212,3 +231,6 @@ exports.findEventWhere = findEventWhere;
 exports.createEvent = createEvent;
 exports.deleteEvent = deleteEvent;
 exports.deleteConnection = deleteConnection;
+
+//export events functions
+exports.signout = signout;
