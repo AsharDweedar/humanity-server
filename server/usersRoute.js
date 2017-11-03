@@ -49,7 +49,7 @@ module.exports = {
             if (match) {
               res.status(202);
               utils.findUserEvents(dbUser.id, (done, evs, m) => {
-                console.log('events found  : ', evs);
+                console.log('events found  : ', evs.length);
                 console.log('messages : ' , m );
                 dbUser.setDataValue ('events', evs);
                 toServer(dbUser);
@@ -68,7 +68,7 @@ module.exports = {
     },
     '/signup' : (req, res, cb) => {
       var user = req.body;
-      console.log('info of user to signup : ', user);
+      console.log('info of user to signup : ', user.username);
       bcrypt.hash(user.password, 10 , function (err , hash) {
         user.password = hash;
         Users.build(user)
