@@ -9,7 +9,7 @@ module.exports = {
     '/' : (req, res, cb) => {
       Users.findAll()
         .then((user) => {
-          if (user) { return cb(done, user, m) }
+          if (user) { return cb(true, user, "found") }
           cb(true, [], "no users matched");
         })
         .catch(({ message }) => {

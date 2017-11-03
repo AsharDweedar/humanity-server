@@ -9,10 +9,11 @@ module.exports = {
     '/' : (req, res, cb) => {
       Orgs.findAll()
         .then((org) => {
-          if (org) {return cb(done, org, m)}
+          if (org) {return cb(true, org, "found")}
           cb(true, [], "no orgs matched");
         })
         .catch(({ message }) => {
+          console.log(message);
           cb(false, [], message);
         })
     },
