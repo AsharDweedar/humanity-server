@@ -9,15 +9,15 @@ const Orgs = utils.Orgs;//not used
 
 module.exports = {
   get : {
-      '/' : (req, res, cb) => {
-        utils.findEventWhere({}, cb);
-      },
-      '/orgevents' : (req, res, cb) => {
-        utils.findOrgEvents(req.session.orgid , cb);
-      },
-      '/userevents' : (req, res, cb) => {
-        utils.findUserEvents(req.session.userid , cb);
-      }
+    '/' : (req, res, cb) => {
+      utils.findEventWhere({}, cb);
+    },
+    '/orgevents' : (req, res, cb) => {
+      utils.findOrgEvents(req.session.orgid , cb);
+    },
+    '/userevents' : (req, res, cb) => {
+      utils.findUserEvents(req.session.userid , cb);
+    }
   },
   post : {
     '/create' : (req, res, cb) => {
@@ -87,7 +87,10 @@ module.exports = {
     '/bylocation' : ({body : {location}}, res, cb) => {
       var query = { where: { location: location}};
       utils.findEventWhere(query, cb);
-    }
+    },
+    '/eventusers' : ({body : {id}}, res, cb) => {
+      utils.eventusers(id, cb);
+    },
   },
   put : {
     '/updateevent' : ({body}, res, cb) => {

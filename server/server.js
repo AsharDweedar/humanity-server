@@ -255,22 +255,9 @@ app.post('/orgs/orgbyid', (req, res) => {
   })
 })
 
-app.post("/orgs/eventusers", (req, res) => {
-  if (!req.body.org_id) {
-    res.status(400);
-    console.log('find org (bad request) for the body : ');
-    console.log(req.body);
-    return res.send({"error" : "send org_id please"});
-  }
-  orgsRouter['post']["/eventusers"](req, res, (done, users, m) => {
-    console.log('users found  : ' , users.length);
-    var st = done ? (users !== null ? 302 : 404) : 500;
-    //302 : found , 404 : not found ,500 : internal server error
-    res.status(st);
-    res.send({ found: done, users: users, message: m });
-  })
-})
-
+app.post('/orgs/voteuser', (req, res) => {
+  
+});
 
 app.put("/orgs/editprofile", (req, res) => {
   if (!req.session && !req.session.name) {
@@ -393,6 +380,23 @@ app.post('/events/bylocation', (req, res) => {
     res.send({"done" : done , "events": events,"message" : message});
   });
 });
+
+app.post("/events/eventusers", (req, res) => {
+  if (!req.body.id) {
+    res.status(400);
+    console.log("find org (bad request) for the body : ");
+    console.log(req.body);
+    return res.send({ error: "send event id please" });
+  }
+  eventsRouter["post"]["/eventusers"](req, res, (done, users, m) => {
+    console.log("users found  : ", users.length);
+    var st = done ? (users !== null ? 302 : 404) : 500;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
+    res.send({ found: done, users: users, message: m });
+  });
+});
+
 
 app.put('/events/updateevent', (req, res) => {
   if (!req.session && req.session.type !== "org") {

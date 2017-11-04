@@ -13,7 +13,7 @@ const Orgs = require('../database/comp/orgs.js');
 /************************************************/
 
 
-var findUserWhere = (query , cb) => {
+function findUserWhere (query , cb) {
   Users.find(query)
     .then((user) => {
       if (user) {
@@ -29,7 +29,7 @@ var findUserWhere = (query , cb) => {
     })
 }
 
-var updateUser = (userid, { username, password, email }, cb, req) => {
+function updateUser (userid, { username, password, email }, cb, req) {
   if (!username && !password && !email) {
     return cb(true, null, "no data provided");
   }
@@ -39,7 +39,7 @@ var updateUser = (userid, { username, password, email }, cb, req) => {
     }
     if (username) {
       user.setDataValue("username", username);
-      req.session.username = username;
+      if (req) req.session.username = username;
     }
     if (email) {
       user.setDataValue("email", email);
@@ -75,7 +75,49 @@ var updateUser = (userid, { username, password, email }, cb, req) => {
   });
 };
 
-var deleteUser = (query, cb)  => {
+function updateUserRate (user_id, cb) {
+  OrgsEvents.find()
+    .then ((connections) => {
+      var acc = 0;
+      for (var i of connections) {
+        acc += i.orgToUser;
+      }
+      var avg = acc / evs.length;
+      updateUser(ID, { rate: avg }, cb);
+    })
+    .catch(({message}) => {
+
+    })
+};
+
+function voteUser ({ user_id, orgToUser, org_id }, cb) {
+  OrgsEvents.find({ where: { user_id: user_id, org_id: org_id } })
+    .then(connection => {
+      var m = "";
+      if (!connection) {
+        cb(true, null, "you can't vote a user who didn't join your event");
+      }
+      if (connection.orgToUser) {
+        m += "your previouse vote was : " + connection.orgToUser;
+      }
+      connection.setDataValue("orgToUser", orgToUser);
+      connection
+        .save()
+        .then(data => {
+          m += " your vote signed successfully for the event as : " + orgToUser;
+          updateUserRate(user_id, (done, org, message) => {
+              m += message;
+              cb(done, org, m);
+          });
+        });
+    })
+    .catch(({ message }) => {
+      m += message;
+      cb(false, null, m);
+    });
+};
+
+function deleteUser (query, cb)  {
   Users.find(query)
     .then((user) => {
       if (!user) return cb(false, {message: "not founf in db"});
@@ -89,7 +131,7 @@ var deleteUser = (query, cb)  => {
     })
 }
 
-var findUserEvents = (ID, cb) => {
+function findUserEvents (ID, cb)  {
   var all = [];
   OrgsEvents.findAll({where : {user_id : ID }})
   .then((connection) => {
@@ -121,7 +163,7 @@ var findUserEvents = (ID, cb) => {
 /*************                  *****************/
 /************************************************/
 
-var findOrgWhere = (query , cb) => {
+function findOrgWhere (query , cb) {
   Orgs.find(query)
     .then((org) => {
       if (org) {
@@ -147,7 +189,7 @@ var findOrgWhere = (query , cb) => {
     })
 }
 
-var deleteOrg = (query, cb)  => {
+function deleteOrg (query, cb)  {
   Orgs.find(query)
     .then((org) => {
       if (!org) return cb(false, {message: "not founf in db"});
@@ -161,7 +203,7 @@ var deleteOrg = (query, cb)  => {
     })
 }
 
-var updateOrg = function(orgid,  { name, password, email, description, rate}, cb, req) {
+function updateOrg (orgid,  { name, password, email, description, rate}, cb, req) {
   if (!name && !password && !email && !description && !rate) {
     return cb(true, null, "no data provided");
   }
@@ -222,7 +264,7 @@ var updateOrg = function(orgid,  { name, password, email, description, rate}, cb
   });
 };
 
-var findOrgEvents = (ID, cb) => {
+function findOrgEvents (ID, cb) {
   Events.findAll({where : {"org_id" : ID}})
     .then((events) => {
       if (!events.length) {
@@ -235,24 +277,7 @@ var findOrgEvents = (ID, cb) => {
     })
 }
 
-var eventusers = (id, cb) => {
-  OrgsEvents.findAll({where : {event_id : id}})
-    .then ((connections) => {
-      var all = [];
-      var counter = connections.length;
-      connections.forEach((connecton) => {
-        Users.find({where : {id: connecton.user_id}})
-          .then ((user) => {
-            all.push(user);
-            if (!(--counter)) {
-              cb (true, all, "done");
-            }
-          })
-      })
-    })
-}
-
-var updateOrgRate = function (ID, cb) {
+function updateOrgRate (ID, cb) {
   //get all org events ... 
   findOrgEvents(ID, (done, evs, m) => {
     //loop
@@ -274,8 +299,7 @@ var updateOrgRate = function (ID, cb) {
 /*************                  *****************/
 /************************************************/
 
-
-var findEventWhere = (query, cb) => { 
+function findEventWhere (query, cb) { 
   Events.findAll(query)
     .then((evs) => {
       if (evs && evs.length) {
@@ -289,7 +313,7 @@ var findEventWhere = (query, cb) => {
     })
 }
 
-var createEvent = (event, cb) => {
+function createEvent (event, cb) {
   Events.build(event)
     .save()
     .then((ev) => {
@@ -302,11 +326,9 @@ var createEvent = (event, cb) => {
       console.log(m);
       cb(false , m);
     })
-}
-
+};
  
-
-var updateEvent = (eventid, {name, description, location, time, duration, rate, volunteers}, cb) => {
+function updateEvent (eventid, {name, description, location, time, duration, rate, volunteers}, cb) {
   if (!name && !description && !location && !time && !duration && !rate && !volunteers) {
     return cb(true, null, "no data provided");
   }
@@ -348,7 +370,7 @@ var updateEvent = (eventid, {name, description, location, time, duration, rate, 
   });
 };
 
-var updateEventRate = (ID, cb) => {
+function updateEventRate (ID, cb) {
   OrgsEvents.find({where : {event_id : ID}})
     .then ((connections) => {
       var acc = 0;
@@ -360,7 +382,7 @@ var updateEventRate = (ID, cb) => {
     })
 };
 
-var voteEvent = function ({user_id, userToEvent, event_id}, cb) {
+function voteEvent ({user_id, userToEvent, event_id}, cb) {
   OrgsEvents.find({where : {user_id : user_id , event_id : event_id}})
     .then ((connection) => {
       var m = "";
@@ -391,7 +413,22 @@ var voteEvent = function ({user_id, userToEvent, event_id}, cb) {
     })
 }
 
-var deleteEvent = (event_id, cb) => {
+function eventusers(id, cb) {
+  OrgsEvents.findAll({ where: { event_id: id } }).then(connections => {
+    var all = [];
+    var counter = connections.length;
+    connections.forEach(connecton => {
+      Users.find({ where: { id: connecton.user_id } }).then(user => {
+        all.push(user);
+        if (!--counter) {
+          cb(true, all, "done");
+        }
+      });
+    });
+  });
+}
+
+function deleteEvent (event_id, cb) {
   Events.find({where :{"id" : event_id}})
     .then((event) => {
       if (event === null) {return cb (false , "event doesn't exist")}
@@ -405,7 +442,7 @@ var deleteEvent = (event_id, cb) => {
     })
 }
 
-var deleteConnection = (query, cb) => {
+function deleteConnection (query, cb) {
   OrgsEvents.findAll({where : query})
     .then((connection) => {
       if (connection === null) {
@@ -437,8 +474,6 @@ var signout = function (req, res, cb) {
   });
 }
 
-
-
 /************************************************/
 /*************                  *****************/
 /*************     exports      *****************/
@@ -452,24 +487,30 @@ exports.OrgsEvents = OrgsEvents;
 exports.Users = Users;
 exports.Orgs = Orgs;
 
+//export users functions
+exports.findUserWhere = findUserWhere;
+exports.updateUser = updateUser;
+exports.updateUserRate = updateUserRate;
+exports.voteUser = voteUser;
+exports.deleteUser = deleteUser;
+exports.findUserEvents = findUserEvents;
+
 //export orgs functions
 exports.findOrgWhere = findOrgWhere;
 exports.deleteOrg = deleteOrg;
+exports.updateOrg = updateOrg;
 exports.findOrgEvents = findOrgEvents;
-exports.eventusers = eventusers;
 exports.updateOrgRate = updateOrgRate;
-
-//export users functions
-exports.findUserWhere = findUserWhere;
-exports.deleteUser = deleteUser;
-exports.findUserEvents = findUserEvents;
 
 //export events functions
 exports.findEventWhere = findEventWhere;
 exports.createEvent = createEvent;
+exports.updateEvent = updateEvent;
+exports.updateEventRate = updateEventRate;
+exports.voteEvent = voteEvent;
+exports.eventusers = eventusers;
 exports.deleteEvent = deleteEvent;
 exports.deleteConnection = deleteConnection;
-exports.updateEvent = updateEvent;
 
 //export common functions
 exports.signout = signout;

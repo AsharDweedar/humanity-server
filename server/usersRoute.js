@@ -97,7 +97,7 @@ module.exports = {
       utils.updateUser(userid, body, cb, req);
     }
   },
-  '/delete' : {
+  delete : {
     '/deletemyaccount' : (req, res, cb) => {
       var userName = req.session.username;
       utils.deleteUser({ where: { username: userName } })

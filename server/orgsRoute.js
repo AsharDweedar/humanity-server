@@ -91,16 +91,13 @@ module.exports = {
     '/orgbyid' : ({body: {org_id}}, res, cb) => {
       utils.findOrgWhere({ where: { id: org_id } }, cb);
     },
-    '/eventusers' : ({body : {id}}, res, cb) => {
-      utils.eventusers(id, cb);
-    },
   },
   put : {
     "/editprofile" : (req, res, cb) => {
       utils.updateOrg(req.session.orgid, req.body, cb, req);
     }
   },
-  '/delete' : {
+  delete : {
     '/deletemyaccount' : (req, res, cb) => {
       var orgName = req.session.name;
       utils.deleteOrg({where: {name: orgName}}, cb);
