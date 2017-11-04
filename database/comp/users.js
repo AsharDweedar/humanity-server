@@ -1,5 +1,5 @@
-var Sequelize = require('sequelize');
-var sequelize = require('./../main.js');
+var sequelize = require("./../main.js").sequelize;
+var Sequelize = require("./../main.js").Sequelize;
 
 var schema = sequelize.define('Users', {
   username: {
@@ -8,27 +8,28 @@ var schema = sequelize.define('Users', {
     unique:true
   },
   password: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT,
     allowNull:false
   },
   email:{
-    type:Sequelize.STRING,
+    type:Sequelize.TEXT,
     allowNull:false
   },
   rate:{
-    type:Sequelize.DECIMAL,
+    type:Sequelize.FLOAT,
   }
 });
 
-//schema.drop();
+// schema.drop();
 
-// schema.sync({ alter: true })
-//           .then((data) => {
-//             console.log('users table created successfuly');
-//           })
-//           .catch((err) => {
-//             console.log(err)
-//           })
+// schema
+//   .sync({force : true})
+//   .then((data) => {
+//     console.log('users table created successfuly');
+//   })
+//   .catch((err) => {
+//     console.log(err)
+//   })
 
 
 

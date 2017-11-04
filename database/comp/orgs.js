@@ -1,5 +1,5 @@
-var Sequelize = require('sequelize');
-var sequelize = require('./../main.js');
+var sequelize = require("./../main.js").sequelize;
+var Sequelize = require("./../main.js").Sequelize;
 
 var schema = sequelize.define('Orgs', {
   name: {
@@ -11,23 +11,26 @@ var schema = sequelize.define('Orgs', {
     type: Sequelize.TEXT
   },
   password:{
-  	type:Sequelize.STRING,
+  	type:Sequelize.TEXT,
     allowNull:false
   },
   email:{
-  	type:Sequelize.STRING,
+  	type:Sequelize.TEXT,
     allowNull: false
   },
   rate:{
-  	type:Sequelize.DECIMAL,
+    type:Sequelize.FLOAT,
+    allowNull: false,
+    defaultValue: 0,
   } 
 });
 
-//schema.drop();
+// schema.drop();
 
-// schema.sync({ alter: true })
+// schema
+//   .sync({  force : true})
 //   .then((data) => {
-//     console.log('Orgs table created successfuly');
+//     console.log("Orgs table updated successfuly");
 //   })
 //   .catch((err) => {
 //     console.log(err)
