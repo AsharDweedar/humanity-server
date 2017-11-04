@@ -15,6 +15,9 @@ var schema = sequelize.define('Users', {
     type:Sequelize.TEXT,
     allowNull:false
   },
+  age: {
+    type:Sequelize.INTEGER,
+  },
   rate:{
     type:Sequelize.FLOAT,
   }
@@ -27,8 +30,8 @@ var schema = sequelize.define('Users', {
 //   .then((data) => {
 //     console.log('users table created successfuly');
 //   })
-//   .catch((err) => {
-//     console.log(err)
+//   .catch(({message}) => {
+//     console.log(message);
 //   })
 
 

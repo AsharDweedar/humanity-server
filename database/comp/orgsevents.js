@@ -30,8 +30,8 @@ var schema = sequelize.define('OrgsEvents', {
 //   .then((data) => {
 //     console.log('Events table updated successfuly');
 //   })
-//   .catch((err) => {
-//     console.log(err);
+//   .catch(({message}) => {
+//     console.log(message);
 //   })
 
 module.exports = schema;

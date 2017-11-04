@@ -20,7 +20,7 @@ var schema = sequelize.define('Events', {
     type:Sequelize.TIME,
   },
   org_id: {
-  	type:Sequelize.TEXT,
+  	type:Sequelize.INTEGER,
   },
   rate: {
     type:Sequelize.INTEGER,
@@ -31,6 +31,13 @@ var schema = sequelize.define('Events', {
     type:Sequelize.INTEGER,
     allowNull: false,
     defaultValue: 0,
+  },
+  joined: {
+    type:Sequelize.INTEGER,
+    defaultValue: 0,
+  },
+  ageLimit: {
+    type:Sequelize.INTEGER,
   }
 });
 
@@ -41,8 +48,8 @@ var schema = sequelize.define('Events', {
 //   .then((data) => {
 //     console.log("Events table updated successfuly");
 //   })
-//   .catch((err) => {
-//     console.log(err)
+//   .catch(({message}) => {
+//     console.log(message);
 //   })
 
 module.exports = schema;

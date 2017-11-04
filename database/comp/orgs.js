@@ -32,8 +32,8 @@ var schema = sequelize.define('Orgs', {
 //   .then((data) => {
 //     console.log("Orgs table updated successfuly");
 //   })
-//   .catch((err) => {
-//     console.log(err)
+//   .catch(({message}) => {
+//     console.log(message);
 //   })
 
 module.exports = schema;
