@@ -19,9 +19,6 @@ server files :
     '/userinfo' : 
       take userName from req.session.username;
 
-    '/deleteuser' : 
-      take userName from req.session.username;
-
   post :
 
     '/signin' : 
@@ -39,6 +36,11 @@ server files :
     '/editprofile' :
       take userinfo from req.body;
 
+  delete : 
+    '/deleteuser' : 
+
+      take userName from req.session.username;
+
 /*******************************************************************/
 /*******************************************************************/
 /*******************************************************************/
@@ -54,9 +56,6 @@ server files :
     '/orginfo' : 
       take orgName from req.session.orgname;
 
-    '/deleteorg' : 
-      take orgName from req.session.orgname;
-
   post :
 
     '/signin' : 
@@ -65,12 +64,13 @@ server files :
     '/signup' : 
         take org from req.body;
 
-    '/deleteorg' :
-      take org from req.body;
-
     '/orgbyid' : 
       take org id from req.body.org_id
 
+  delete : 
+
+    '/deleteorg' : 
+      take orgName from req.session.orgname;
 
 /*******************************************************************/
 /*******************************************************************/
@@ -93,10 +93,7 @@ server files :
       take event from req.body;
       take event.org_id from req.session.username;
 
-    '/delteevent' : 
-      take org_id from req.session.id;
-      take event_id from req.body.id;
-
+    
     '/join' : 
       take event_id from req.body.id;
       take user_id from req.session.id;
@@ -108,3 +105,12 @@ server files :
     
     '/bylocation' : 
       take location from req.body.location ;
+
+  delete : 
+    '/delteevent' : 
+      take org_id from req.session.id;
+      take event_id from req.body.id;
+
+    '/unjoin' : 
+      take event_id from req.body.id;
+      take user_id from req.session.id;

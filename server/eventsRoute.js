@@ -86,7 +86,7 @@ module.exports = {
       utils.findEventWhere(query, cb);
     }
   },
-  '/delete' : {
+  delete : {
     '/unjoin' : ({body : {id , org_id}, session : {userid}}, res, cb) => {
       if (!org_id || !id) {
         res.status(400); //400 : bad request
