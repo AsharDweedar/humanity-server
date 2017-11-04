@@ -247,9 +247,27 @@ app.post('/orgs/orgbyid', (req, res) => {
     console.log(req.body);
     return res.send({"error" : "send org_id please"});
   }
-  orgsRouter['post']['/orgbyid'](req, res, (done, data) => {
-    console.log('data found for : ' , data.name);
-    return !done ? res.send({"error" : data}) : res.send({"org" : data});
+  orgsRouter['post']['/orgbyid'](req, res, (done, data, message) => {
+    var st = done ? (org !== null ? 302 : 404) : 500;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
+    res.send({ found: done, org: org, message: m });
+  })
+})
+
+app.post("/orgs/eventusers", (req, res) => {
+  if (!req.body.org_id) {
+    res.status(400);
+    console.log('find org (bad request) for the body : ');
+    console.log(req.body);
+    return res.send({"error" : "send org_id please"});
+  }
+  orgsRouter['post']["/eventusers"](req, res, (done, users, m) => {
+    console.log('users found  : ' , users.length);
+    var st = done ? (users !== null ? 302 : 404) : 500;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
+    res.send({ found: done, users: users, message: m });
   })
 })
 

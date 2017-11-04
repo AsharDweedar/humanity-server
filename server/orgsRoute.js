@@ -88,9 +88,12 @@ module.exports = {
           })
       })
     },
-    '/orgbyid' : ({body}, res, cb) => {
-      utils.findOrgWhere({ where: { id: body.org_id } }, cb);
-    }
+    '/orgbyid' : ({body: {org_id}}, res, cb) => {
+      utils.findOrgWhere({ where: { id: org_id } }, cb);
+    },
+    '/eventusers' : ({body : {id}}, res, cb) => {
+      utils.eventusers(id, cb);
+    },
   },
   put : {
     "/editprofile" : (req, res, cb) => {

@@ -116,6 +116,22 @@ var findOrgEvents = (ID, cb) => {
     })
 }
 
+var eventusers = (id, cb) => {
+  OrgsEvents.findAll({where : {event_id : id}})
+    .then ((connections) => {
+      var all = [];
+      var counter = connections.length;
+      connections.forEach((connecton) => {
+        Users.find({where : {id: connecton.user_id}})
+          .then ((user) => {
+            all.push(user);
+            if (!(--counter)) {
+              cb (true, all, "done");
+            }
+          })
+      })
+    })
+}
 
 /************************************************/
 /*************                  *****************/
@@ -220,6 +236,7 @@ exports.Orgs = Orgs ;
 exports.findOrgWhere = findOrgWhere;
 exports.deleteOrg = deleteOrg;
 exports.findOrgEvents = findOrgEvents;
+exports.eventusers = eventusers;
 
 //export users functions
 exports.findUserWhere = findUserWhere;
