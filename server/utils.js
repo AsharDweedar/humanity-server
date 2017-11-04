@@ -5,6 +5,8 @@ const OrgsEvents = require('../database/comp/orgsevents.js');
 const Users = require('../database/comp/users.js');
 const Orgs = require('../database/comp/orgs.js');
 
+//bcrypt
+const bcrypt = require("bcrypt");
 
 /************************************************/
 /*************                  *****************/
@@ -51,7 +53,7 @@ function updateUser (userid, { username, password, email }, cb, req) {
           .save()
           .then(data => {
             console.log(data);
-            utils.findUserEvents(userid, (done, evs) => {
+            findUserEvents(userid, (done, evs) => {
               if (evs && evs.length) {
                 user.setDataValue("events", evs);
               }
@@ -64,7 +66,7 @@ function updateUser (userid, { username, password, email }, cb, req) {
       });
     } else {
       user.save().then(date => {
-        utils.findUserEvents(userid, (done, evs) => {
+        findUserEvents(userid, (done, evs) => {
           if (evs && evs.length) {
             user.setDataValue("events", evs);
           }
@@ -105,9 +107,9 @@ function voteUser ({ user_id, orgToUser, org_id }, cb) {
         .save()
         .then(data => {
           m += " your vote signed successfully for the event as : " + orgToUser;
-          updateUserRate(user_id, (done, org, message) => {
+          updateUserRate(user_id, (done, user, message) => {
               m += message;
-              cb(done, org, m);
+              cb(done, user, m);
           });
         });
     })
@@ -167,7 +169,7 @@ function findOrgWhere (query , cb) {
   Orgs.find(query)
     .then((org) => {
       if (org) {
-        return findOrgEvents(org.id, (done, evs, m) => {
+        findOrgEvents(org.id, (done, evs, m) => {
           if (evs && evs.length) {
             var count = evs.length;
             for (var ev of evs) {
@@ -179,10 +181,13 @@ function findOrgWhere (query , cb) {
                 }
               });
             }
+          } else {
+            cb(true, org, "found data");
           }
         });
+      } else {
+        cb (true, null, "no orgs matched");
       }
-      cb (true, null, "no orgs matched");
     })
     .catch(({message}) => {
       cb (false, null, message);
@@ -204,10 +209,7 @@ function deleteOrg (query, cb)  {
 }
 
 function updateOrg (orgid,  { name, password, email, description, rate}, cb, req) {
-  if (!name && !password && !email && !description && !rate) {
-    return cb(true, null, "no data provided");
-  }
-  Orgs.find({ where: { id: orgid } }).then(org => {
+  Orgs.find({ where: { id: orgid } }).then( org => {
     if (!org) {
       return cb(false, null, "not found in db");
     }
@@ -231,7 +233,7 @@ function updateOrg (orgid,  { name, password, email, description, rate}, cb, req
           .save()
           .then(data => {
             console.log(data);
-            utils.findOrgEvents(orgid, (done, evs) => {
+            findOrgEvents(orgid, (done, evs) => {
               if (evs && evs.length) {
                 org.setDataValue("events", evs);
               }
@@ -247,8 +249,8 @@ function updateOrg (orgid,  { name, password, email, description, rate}, cb, req
     } else {
       org
         .save()
-        .then(date => {
-          utils.findOrgEvents(orgid, (done, evs) => {
+        .then( data => {
+          findOrgEvents(orgid, (done, evs) => {
             if (evs && evs.length) {
               org.setDataValue("events", evs);
             }
@@ -266,11 +268,21 @@ function updateOrg (orgid,  { name, password, email, description, rate}, cb, req
 
 function findOrgEvents (ID, cb) {
   Events.findAll({where : {"org_id" : ID}})
-    .then((events) => {
-      if (!events.length) {
-        return cb(true, [] , "no events found");
+    .then((evs) => {
+      if (evs && evs.length) {
+        var count = evs.length;
+        for (var ev of evs) {
+          eventusers(ev.id, (done, users, message) => {
+            ev.setDataValue("users", users);
+            if (!--count) {
+              cb(done, evs, "done");
+            }
+          });
+        }
+      } else {
+        cb(true, [], "no events found");
       }
-      cb(true, events);
+      // cb(true, events);
     })
     .catch(({message}) => {
       cb(false, [] , message);
@@ -328,34 +340,37 @@ function createEvent (event, cb) {
     })
 };
  
-function updateEvent (eventid, {name, description, location, time, duration, rate, volunteers}, cb) {
-  if (!name && !description && !location && !time && !duration && !rate && !volunteers) {
-    return cb(true, null, "no data provided");
-  }
-  Events.find({ where: { id: eventid } }).then( event => {
+function updateEvent(eventid, { name, description, location, time, duration, rate, volunteers, ageLimit, joined }, cb) {
+  Events.find({ where: { id: eventid } }).then(event => {
     if (!event) {
       return cb(false, null, "not found in db");
     }
-    if ( name ) {
+    if (name) {
       event.setDataValue(name);
     }
-    if ( description ) {
+    if (description) {
       event.setDataValue(description);
     }
-    if ( location ) {
+    if (location) {
       event.setDataValue(location);
     }
-    if ( time ) {
+    if (time) {
       event.setDataValue(time);
     }
-    if ( duration ) {
+    if (duration) {
       event.setDataValue(duration);
     }
-    if ( rate ) {
+    if (rate) {
       event.setDataValue(rate);
     }
-    if ( volunteers) {
-      event.setDataValue(volunteer);
+    if (volunteers) {
+      event.setDataValue(volunteers);
+    }
+    if (ageLimit) {
+      event.setDataValue(ageLimit);
+    }
+    if (joined) {
+      event.setDataValue(joined);
     }
     event
       .save()
@@ -417,14 +432,19 @@ function eventusers(id, cb) {
   OrgsEvents.findAll({ where: { event_id: id } }).then(connections => {
     var all = [];
     var counter = connections.length;
-    connections.forEach(connecton => {
-      Users.find({ where: { id: connecton.user_id } }).then(user => {
-        all.push(user);
-        if (!--counter) {
-          cb(true, all, "done");
-        }
+    if (counter) {
+      connections.forEach(connecton => {
+        Users.find({ where: { id: connecton.user_id } }).then(user => {
+          all.push(user);
+          if (!--counter) {
+            cb(true, all, "done");
+          }
+        });
       });
-    });
+    } else {
+      cb(true, [], "done");
+    }
+
   });
 }
 

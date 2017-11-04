@@ -14,9 +14,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-//passwords in/de-crypting ..
-//import bcrypt = require('bcrypt'; 
-
 //for log-in/out sessions
 var session = require('express-session'); 
 app.use(session({
@@ -69,7 +66,8 @@ app.get('/users', (req, res) => {
     //302 : found , 404 : not found, 500 : intrnal server error
     res.send(users);
   });
-})
+});
+
 app.get('/users/signout', (req, res) => {
   console.log('signing out for : ', req.session.username)
   if (req.session.username) {
@@ -84,6 +82,7 @@ app.get('/users/signout', (req, res) => {
     res.send({"done" : false});
   }
 });
+
 app.get('/users/userinfo', (req, res) => {
   if (!req.session.username) {
     res.status(401);//401 : not authrised
@@ -109,12 +108,14 @@ app.post('/users/signin', (req, res) => {
       console.log(`signing in for : ${info.username}`);
       req.session.username = info.username;
       req.session.userid = info.id;
+      req.session.age = info.age;
       req.session.type = "user";
       console.log('session : ', req.session);
     }
     res.send(info);
   });
 });
+
 app.post('/users/signup', (req, res) => {
   console.log('inside server .. redirecting to ordered route ..');
   usersRouter['post']['/signup'](req, res, (done, message, missing) => {
@@ -137,8 +138,20 @@ app.post('/users/userbyid', (req, res) => {
   usersRouter['post']['/userbyid'](req, res, (done, data) => {
     console.log("user by id : ", data.name);
     return !done ? res.send({"error" : data}) : res.send({"user" : data});
-  })
-})
+  });
+});
+
+app.post('/users/voteuser', (req, res) => {
+  if (!req.session && !req.session.type === 'org') {
+    return res.send({"done" : false, "message" : "please sign in as org first !!"});
+  }
+  usersRouter["post"]["/voteuser"](req, res, (done, data, message) => {
+     var st = done ? (data !== null ? 200 : 400) : 500;
+     //200 : ok , 400 : bad request,500 : internal server error
+     console.log(message);
+     res.status(st);
+  });
+});
 
 app.put('/users/editprofile', (req, res) => {
   if (!req.session && !req.session.username) {
@@ -181,7 +194,8 @@ app.get('/orgs', (req, res) => {
     //302 : found , 404 : not found, 500 : intrnal server error
     res.send(orgs);
   });
-})
+});
+
 app.get('/orgs/signout', (req, res) => {
   console.log('signing out for : ', req.session.name)
   if (req.session.name) {
@@ -252,11 +266,7 @@ app.post('/orgs/orgbyid', (req, res) => {
     //302 : found , 404 : not found ,500 : internal server error
     res.status(st);
     res.send({ found: done, org: org, message: m });
-  })
-})
-
-app.post('/orgs/voteuser', (req, res) => {
-  
+  });
 });
 
 app.put("/orgs/editprofile", (req, res) => {
@@ -350,6 +360,8 @@ app.post('/events/join', (req, res) => {
     return res.send({"done" : false , "message" : "sign in as user first !!"})
   }
   eventsRouter['post']['/join'](req, res, (done, message) => {
+    console.log(done, message)
+    console.log('done, message')
     res.send({"done" : done , "message" : message});
   });
 });
@@ -397,7 +409,6 @@ app.post("/events/eventusers", (req, res) => {
   });
 });
 
-
 app.put('/events/updateevent', (req, res) => {
   if (!req.session && req.session.type !== "org") {
     res.status(401); //401 : un authrized ...
@@ -421,7 +432,6 @@ app.delete('/events/deleteevent', (req, res) => {
     res.send({"done" : done , "message" : message});
   });
 });
-
 
 app.delete("/events/unjoin", (req, res) => {
   if (!req.session && !req.session.username) {
@@ -467,8 +477,8 @@ app.post('/admin/deleteuser', (req, res) => {
   adminRouter['/deleteuser'](req, res, (done, err) => {
     res.status(done ? 202 : 500); //202 : accepted , 500 :server err
     res.send(done ? { "done": done } : { "error": err });
-  })
-})
+  });
+});
 
 
 /***************************************************

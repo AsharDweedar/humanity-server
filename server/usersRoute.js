@@ -90,6 +90,9 @@ module.exports = {
     '/userbyid' : ({body}, res, cb) => {
       utils.findUserWhere({ where: { id: body.user_id } }, cb);
     },
+    '/voteuser' : ( {body : {user_id , vote }, session : {orgid}}, res, cb) => {
+      utils.voteUser({ "user_id" : user_id, "orgToUser" : vote, "org_id" : orgid }, cb);
+    }
   },
   put : {
     "/editprofile" : (req, res, cb) => {

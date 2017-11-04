@@ -23,26 +23,43 @@ module.exports = {
     '/create' : (req, res, cb) => {
       var event = req.body;
       event.org_id = req.session.orgid;
+      var time = req.body.time.split(" ");
+      event.time = time[0] + "T" + time[1] + ":00.000Z";
       utils.createEvent(event, cb);
     },
-    '/join' : ({body : {id , org_id}, session : {userid}}, res, cb) => {
-      if (!org_id || !id) {
+    '/join' : ({body : {event_id , org_id}, session : {userid, age}}, res, cb) => {
+      if (!org_id || !event_id) {
         res.status(400); //400 : bad request
-        return cb(false, "missing info : org_id = " + org_id + "event.id" + id);
+        return cb(false, "missing info : org_id = " + org_id + "event.id" + event_id);
       }
-      var ev = { "event_id": id, "user_id": userid, "org_id" : org_id};
+      var ev = { "event_id": event_id, "user_id": userid, "org_id" : org_id};
       OrgsEvents.find({where : ev})
         .then((data) => {
           if (!!data) {
-            res.status(304); //400 : bad request
+            //res.status(304); //304 : not implemented , already exists
+            res.status(400); //400 : bad request ..
+            console.log("already joined")
             return cb(false, "already joined");
           }
-          OrgsEvents.build(ev)
-            .save()
-            .then(() => {
-              res.status(201);//201 : accepted
-              cb(true, "you are joined now !!");
-            })
+          utils.findEventWhere({where: {id: event_id}}, (done, [event], m) => {
+            if (event.joined === event.volunteers) {
+              return cb(true, "sorry, already enough volunteers joined , we will be happy to have you again next time ");
+            }
+            if (event.ageLimit > age && event.ageLimit !== 0) {
+              return cb(true, "sorry, your a little bit younger than the age limit for this event");
+            }
+            event.setDataValue('joined', event.joined + 1);
+            event
+              .save()
+              .then((data) => {
+                OrgsEvents.build(ev)
+                  .save()
+                  .then(() => {
+                    res.status(201);//201 : accepted
+                    cb(true, "you are joined now !!");
+                  })
+              })
+          });
         })
         .catch(({message}) => {
           res.status(500); //500 : server error
