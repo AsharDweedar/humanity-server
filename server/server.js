@@ -147,8 +147,8 @@ app.put('/users/editprofile', (req, res) => {
   }
   usersRouter['put']['/editprofile'](req, res, (done, data, message) => {
     console.log('recieved from routers : ',done );
-    var st = done ? (data !== null ? 202 : 400) : 500;
-    //202 : updated , 400 : bad request,500 : internal server error
+    var st = done ? (data !== null ? 200 : 400) : 500;
+    //200 : ok , 400 : bad request,500 : internal server error
     console.log(message);
     res.status(st);
     res.send({"done": done, "data": data, "message": message});
@@ -280,7 +280,7 @@ app.put("/orgs/editprofile", (req, res) => {
   orgsRouter["put"]["/editprofile"](req, res, (done, data, message) => {
     console.log("recieved from routers 'orgs/editprofile' : ", done);
     var st = done ? (data !== null ? 202 : 400) : 500;
-    //202 : updated , 400 : bad request,500 : internal server error
+    //200 : ok , 400 : bad request,500 : internal server error
     console.log(message);
     res.status(st);
     res.send({ done: done, data: data, message: message });
@@ -345,7 +345,7 @@ app.get('/events/userevents', (req, res) => {
 });
 
 app.post('/events/create', (req, res) => {
-  if (!req.session || (req.session && req.session.type !== "org")) {
+  if (!req.session && req.session.type !== "org") {
     res.status(401); //401 : un authrized ...
     console.log('un authrized user to create event .....');
     return res.send({message : "sign in as organisation first !!"})
@@ -357,7 +357,7 @@ app.post('/events/create', (req, res) => {
 });
 
 app.post('/events/join', (req, res) => {
-  if (!req.session.username) {
+  if (!req.session && !req.session.username) {
     res.status(401); //401 : un authrized ...
     console.log('un authrized user to join event .....', req.session);
     return res.send({"done" : false , "message" : "sign in as user first !!"})
@@ -367,6 +367,16 @@ app.post('/events/join', (req, res) => {
   });
 });
 
+app.post('/events/vote', (req, res) => {
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : un authrized ...
+    console.log("trying to vote Event event .....", req.session);
+    return res.send({ done: false, message: "sign in as user first !!" });
+  }
+  eventsRouter["post"]["/vote"](req, res, (done, data, message) => {
+    res.send({ done: done, message: message, data: data });
+  });
+});
 
 app.post('/events/bytime', (req, res) => {
   eventsRouter['post']['/bytime'](req, res, (done, events, message) => {
@@ -384,6 +394,17 @@ app.post('/events/bylocation', (req, res) => {
   });
 });
 
+app.put('/events/updateevent', (req, res) => {
+  if (!req.session && req.session.type !== "org") {
+    res.status(401); //401 : un authrized ...
+    console.log("un authrized user to create event .....");
+    return res.send({ message: "sign in as organisation first !!" });
+  }
+  eventsRouter["post"]["/updateevent"](req, res, (done, event, message) => {
+    res.status(done ? 200 : 400); //200 : ok , 400 : bad request
+    res.send({"done": done, "event": event, "message": message});
+  });
+});
 
 app.delete('/events/deleteevent', (req, res) => {
   if (!req.session || (req.session && req.session.type !== "org")) {
@@ -448,7 +469,7 @@ app.post('/admin/deleteuser', (req, res) => {
 
 /***************************************************
 
-server 
+common 
 
 **************************************************/
 

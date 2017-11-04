@@ -93,51 +93,8 @@ module.exports = {
   },
   put : {
     "/editprofile" : (req, res, cb) => {
-      var {body : {username, password, email}, session : {userid}} = req;
-      if (!username && !password && !email) {
-        return cb (true, null, "no data provided");
-      }
-      Users.find({ where: { id: userid } })
-        .then((user) => {
-          if (!user) {
-            return cb(false, null, "not found in db");
-          }
-          if (username) {
-            user.setDataValue('username', username);
-            req.session.username = username;
-          }
-          if (email) {
-            user.setDataValue("email", email);
-          }
-          if (password) {
-            return bcrypt.hash(password, 10 , function (err , hash) {
-              user.setDataValue("password", hash);
-              user.save()
-                .then((data) => {
-                  console.log(data);
-                  utils.findUserEvents(userid, (done, evs) => {
-                    if (evs && evs.length) {
-                      user.setDataValue('events', evs);
-                    }
-                    cb(true, user, "data updated");
-                  })
-                })
-                .catch(({message}) => {
-                  cb(false, null, message);
-                });
-            });
-          } else {
-            user.save()
-              .then((date) => {
-                utils.findUserEvents(userid, (done, evs) => {
-                  if (evs && evs.length) {
-                    user.setDataValue("events", evs);
-                  }
-                  cb(true, user, "data updated");
-                });
-              });
-          }
-        });
+      var {body, session : {userid}} = req;
+      utils.updateUser(userid, body, cb, req);
     }
   },
   '/delete' : {

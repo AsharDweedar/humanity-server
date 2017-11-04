@@ -1,5 +1,5 @@
 //utils
-const utils =  require('./utils.js');
+const utils = require("./utils.js");
 
 //tables
 const Events = utils.Events;
@@ -34,7 +34,7 @@ module.exports = {
       OrgsEvents.find({where : ev})
         .then((data) => {
           if (!!data) {
-            res.status(400); //400 : bad request
+            res.status(304); //400 : bad request
             return cb(false, "already joined");
           }
           OrgsEvents.build(ev)
@@ -48,6 +48,9 @@ module.exports = {
           res.status(500); //500 : server error
             cb(false, message);
           })
+    },
+    '/vote' : ({body : {id, vote}, session : {userid}}, res, cb) => {
+      utils.voteEvent({user_id: userid, event_id : id, userToEvent : vote} , cb);
     },
     '/bytime' : ({body: {after , before}}, res, cb) => {
       if (after) {
@@ -84,6 +87,11 @@ module.exports = {
     '/bylocation' : ({body : {location}}, res, cb) => {
       var query = { where: { location: location}};
       utils.findEventWhere(query, cb);
+    }
+  },
+  put : {
+    '/updateevent' : ({body}, res, cb) => {
+      utils.updateEvent(body, cb);
     }
   },
   delete : {

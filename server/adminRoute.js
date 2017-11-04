@@ -9,9 +9,9 @@ module.exports = {
     utils.createEvent(body, cb);
   },
   '/deleteorg': ({ body: { ID } }, res, cb) => {
-    utils.deleteOrg({ where: { ID: ID } }, cb);
+    utils.deleteOrg({ where: { id: ID } }, cb);
   },
   '/deleteuser': ({ body : { ID } }, res, cb) => {
-    utils.deleteUser({ where: { ID: ID } }, cb);
+    utils.deleteUser({ where: { id: ID } }, cb);
   },
 }
