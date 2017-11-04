@@ -25,11 +25,6 @@ module.exports = {
       event.org_id = req.session.orgid;
       utils.createEvent(event, cb);
     },
-    '/delteevent' : (req, res, cb) => {
-      org_id = req.session.orgid;
-      event_id = req.body.id;
-      utils.deleteEvent(event_id, cb);
-    },
     '/join' : ({body : {id , org_id}, session : {userid}}, res, cb) => {
       if (!org_id || !id) {
         res.status(400); //400 : bad request
@@ -91,4 +86,34 @@ module.exports = {
       utils.findEventWhere(query, cb);
     }
   },
+  '/delete' : {
+    '/unjoin' : ({body : {id , org_id}, session : {userid}}, res, cb) => {
+      if (!org_id || !id) {
+        res.status(400); //400 : bad request
+        return cb(false, "missing info : org_id = " + org_id + "event.id" + id);
+      }
+      var ev = { "event_id": id, "user_id": userid, "org_id" : org_id};
+      OrgsEvents.find({where : ev})
+        .then((data) => {
+          if (!data) {
+            res.status(400); //400 : bad request
+            return cb(false, "you are not joined");
+          }
+          data.destroy()
+            .then(() => {
+              res.status(201);//201 : accepted
+              cb(true, "your contibution is now cancled !!");
+            })
+        })
+        .catch(({message}) => {
+          res.status(500); //500 : server error
+            cb(false, message);
+          })
+    },
+    '/delteevent' : (req, res, cb) => {
+      org_id = req.session.orgid;
+      event_id = req.body.id;
+      utils.deleteEvent(event_id, cb);
+    },
+  }
 }

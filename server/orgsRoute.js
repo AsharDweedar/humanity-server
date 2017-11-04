@@ -24,10 +24,6 @@ module.exports = {
       var orgName = req.session.name;
       utils.findOrgWhere({ where : {name : orgName}}, cb);
     },
-    '/deletemyaccount' : (req, res, cb) => {
-      var orgName = req.session.name;
-      utils.deleteOrg({where: {name: orgName}}, cb);
-    },
   },
   post : {
     '/signin' : ({body}, res, toServer) => {
@@ -157,5 +153,11 @@ module.exports = {
           }
         });
     }
+  },
+  '/delete' : {
+    '/deletemyaccount' : (req, res, cb) => {
+      var orgName = req.session.name;
+      utils.deleteOrg({where: {name: orgName}}, cb);
+    },
   }
 }

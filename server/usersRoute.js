@@ -23,10 +23,6 @@ module.exports = {
       var userName = req.session.username;
       utils.findUserWhere({ where: { username: userName } }, cb);
     },
-    '/deletemyaccount' : (req, res, cb) => {
-      var userName = req.session.username;
-      utils.deleteUser({ where: { username: userName } })
-    },
   },
   post : {
     '/signin' : ({body}, res, toServer) => {
@@ -143,5 +139,11 @@ module.exports = {
           }
         });
     }
+  },
+  '/delete' : {
+    '/deletemyaccount' : (req, res, cb) => {
+      var userName = req.session.username;
+      utils.deleteUser({ where: { username: userName } })
+    },
   }
 }

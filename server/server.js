@@ -97,17 +97,6 @@ app.get('/users/userinfo', (req, res) => {
   });
 });
 
-app.get('/users/deletemyaccount', (req, res) => {
-  if (!req.session && !req.session.username) {
-    res.status(401); //401 : not authrised
-    return res.send({ found: false, message: "not signed in" });
-  }
-  usersRouter['get']['/deletemyaccount'](req, res, (done, err) => {
-    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send(done ? {"done" : done} : {"error" : error});
-  })
-});
-
 app.post('/users/signin', (req, res) => {
   if (!!req.session.username) {
     res.status(400); //401 : un authrized ...
@@ -166,6 +155,18 @@ app.put('/users/editprofile', (req, res) => {
   });
 });
 
+app.delete("/users/deletemyaccount", (req, res) => {
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : not authrised
+    return res.send({ found: false, message: "not signed in" });
+  }
+  usersRouter["delete"]["/deletemyaccount"](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? { done: done } : { error: error });
+  });
+});
+
+
 /***************************************************
 
 orgs router from here
@@ -207,13 +208,6 @@ app.get('/orgs/orginfo', (req, res) => {
     res.status(st);
     res.send({ "found": done, "org": org, "message" : m})
   });
-});
-
-app.get('/orgs/deletemyaccount', (req, res) => {
-  orgsRouter['get']['/deletemyaccount'](req, res, (done, err) => {
-    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
-    res.send({"done" : done , "error" : err});
-  })
 });
 
 app.post('/orgs/signin', (req, res) => {
@@ -273,6 +267,13 @@ app.put("/orgs/editprofile", (req, res) => {
     res.status(st);
     res.send({ done: done, data: data, message: message });
   });
+});
+
+app.delete('/orgs/deletemyaccount', (req, res) => {
+  orgsRouter["delete"]['/deletemyaccount'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send({"done" : done , "error" : err});
+  })
 });
 
 /***************************************************
@@ -337,28 +338,17 @@ app.post('/events/create', (req, res) => {
   });
 });
 
-app.post('/events/deleteevent', (req, res) => {
-  if (!req.session || (req.session && req.session.type !== "org")) {
-    res.status(401); //401 : un authrized ...
-    console.log('un authrized user to create event .....');
-    return res.send({message : "sign in as organisation first !!"})
-  }
-  eventsRouter['post']['/deleteevent'](req, res, (done, message) => {
-    res.status(done ? 201 : 400);//201: created , 400 : bad request
-    res.send({"done" : done , "message" : message});
-  });
-});
-
 app.post('/events/join', (req, res) => {
   if (!req.session.username) {
     res.status(401); //401 : un authrized ...
     console.log('un authrized user to join event .....', req.session);
-    return res.send({message : "sign in as user first !!"})
+    return res.send({"done" : false , "message" : "sign in as user first !!"})
   }
   eventsRouter['post']['/join'](req, res, (done, message) => {
     res.send({"done" : done , "message" : message});
   });
 });
+
 
 app.post('/events/bytime', (req, res) => {
   eventsRouter['post']['/bytime'](req, res, (done, events, message) => {
@@ -373,6 +363,31 @@ app.post('/events/bylocation', (req, res) => {
     res.status(done ? ((events.length) ? 302 : 404 ) : 500);
     //302 : found , 404 : not found, 500 : intrnal server error
     res.send({"done" : done , "events": events,"message" : message});
+  });
+});
+
+
+app.delete('/events/deleteevent', (req, res) => {
+  if (!req.session || (req.session && req.session.type !== "org")) {
+    res.status(401); //401 : un authrized ...
+    console.log('un authrized user to create event .....');
+    return res.send({message : "sign in as organisation first !!"})
+  }
+  eventsRouter["delete"]['/deleteevent'](req, res, (done, message) => {
+    res.status(done ? 201 : 400);//201: created , 400 : bad request
+    res.send({"done" : done , "message" : message});
+  });
+});
+
+
+app.delete("/events/unjoin", (req, res) => {
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : un authrized ...
+    console.log("un authrized user to un-join event .....", req.session);
+    return res.send({ done: false, message: "sign in as user first !!" });
+  }
+  eventsRouter["delete"]["/unjoin"](req, res, (done, message) => {
+    res.send({ done: done, message: message });
   });
 });
 
@@ -423,7 +438,7 @@ var utils = require('./utils.js');
 
 app.get('/isLoggedIn', (req, res) => {
   var obj = {}
-  if (!req.session || !req.session.type) {
+  if (!req.session && !req.session || !req.session.type) {
     obj.isLoggedIn = false;
     obj.type = "";
     return res.send(obj);
