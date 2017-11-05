@@ -2,7 +2,7 @@
 var Sequelize = require('sequelize');
 // var config = require('../config.js');
 
-const sequelize = new Sequelize("sql12201289", "sql12201289", "RImDWfyQF6" , {
+const sequelize = new Sequelize("sql12203209", "sql12203209", "DjkTqyk9Bz" , {
   host: "sql12.freemysqlhosting.net",
   dialect: 'mysql',
   pool: {
