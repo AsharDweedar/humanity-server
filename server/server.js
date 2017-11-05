@@ -480,6 +480,10 @@ app.post('/admin/deleteuser', (req, res) => {
   });
 });
 
+app.get("/admin/connections", (req, res) => {
+  adminRouter['/connections'](req, res);
+});
+
 
 /***************************************************
 

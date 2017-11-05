@@ -20,7 +20,7 @@ var schema = sequelize.define('Events', {
     type:Sequelize.TIME,
   },
   org_id: {
-  	type:Sequelize.INTEGER,
+  	type:Sequelize.TEXT,
   },
   rate: {
     type:Sequelize.INTEGER,

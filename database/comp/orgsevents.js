@@ -4,15 +4,15 @@ var Sequelize = require("./../main.js").Sequelize;
 
 var schema = sequelize.define('OrgsEvents', {
   event_id: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.TEXT,
     allowNull: false,
   },
   user_id:{
-    type: Sequelize.INTEGER,
+    type: Sequelize.TEXT,
     allowNull: false,
   },
   org_id: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.TEXT,
     allowNull: false,
   },
   orgToUser: {

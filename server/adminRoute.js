@@ -14,4 +14,14 @@ module.exports = {
   '/deleteuser': ({ body : { ID } }, res, cb) => {
     utils.deleteUser({ where: { id: ID } }, cb);
   },
+  '/connections' : (req, res) => {
+    utils.OrgsEvents.findAll()
+      .then((all) => {
+        res.send(all);
+        // var count = all.length * 2 ;
+        // all.forEach((ele) => {
+        //   ele.user_id
+        // })
+      });
+  }
 }
