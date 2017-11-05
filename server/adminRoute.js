@@ -18,10 +18,20 @@ module.exports = {
     utils.OrgsEvents.findAll()
       .then((all) => {
         res.send(all);
-        // var count = all.length * 2 ;
-        // all.forEach((ele) => {
-        //   ele.user_id
-        // })
-      });
-  }
+      })
+      .catch(({message}) => {
+        console.log(message);
+        res.send(message);
+      })
+  },
+  '/connectionswhere' : (req, res) => {
+    utils.OrgsEvents.findAll(req.body)
+      .then((all) => {
+        res.send(all);
+      })
+      .catch(({message}) => {
+        console.log(message);
+        res.send(message);
+      })
+  },
 }

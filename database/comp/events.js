@@ -22,6 +22,9 @@ var schema = sequelize.define('Events', {
   org_id: {
   	type:Sequelize.TEXT,
   },
+  org_name: {
+  	type:Sequelize.TEXT,
+  },
   rate: {
     type:Sequelize.INTEGER,
     allowNull: false,
@@ -44,7 +47,7 @@ var schema = sequelize.define('Events', {
 // schema.drop();
 
 // schema
-//   .sync({force : true})
+//   .sync({alter : true})
 //   .then((data) => {
 //     console.log("Events table updated successfuly");
 //   })

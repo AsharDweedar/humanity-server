@@ -11,6 +11,10 @@ var schema = sequelize.define('OrgsEvents', {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  user_name:{
+    type: Sequelize.TEXT,
+    allowNull: false,
+  },
   org_id: {
     type: Sequelize.TEXT,
     allowNull: false,

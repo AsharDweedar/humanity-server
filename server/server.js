@@ -484,6 +484,10 @@ app.get("/admin/connections", (req, res) => {
   adminRouter['/connections'](req, res);
 });
 
+app.post("/admin/connectionswhere", (req, res) => {
+  adminRouter['/connectionswhere'](req, res);
+});
+
 
 /***************************************************
 

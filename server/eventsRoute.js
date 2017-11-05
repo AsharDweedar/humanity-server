@@ -23,16 +23,17 @@ module.exports = {
     '/create' : (req, res, cb) => {
       var event = req.body;
       event.org_id = req.session.orgid;
+      event.org_name = req.session.name;
       var time = req.body.time.split(" ");
       event.time = time[0] + "T" + time[1] + ":00.000Z";
       utils.createEvent(event, cb);
     },
-    '/join' : ({body : {event_id , org_id}, session : {userid, age}}, res, cb) => {
+    '/join' : ({body : {event_id , org_id}, session : {userid, age, username}}, res, cb) => {
       if (!org_id || !event_id) {
         res.status(400); //400 : bad request
         return cb(false, "missing info : org_id = " + org_id + "event.id" + event_id);
       }
-      var ev = { "event_id": event_id, "user_id": userid, "org_id" : org_id};
+      var ev = { event_id: event_id, user_id: userid, user_name: username, org_id: org_id };;
       OrgsEvents.find({where : ev})
         .then((data) => {
           if (!!data) {
