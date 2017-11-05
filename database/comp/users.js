@@ -25,14 +25,14 @@ var schema = sequelize.define('Users', {
 
 // schema.drop();
 
-// schema
-//   .sync({force : true})
-//   .then((data) => {
-//     console.log('users table created successfuly');
-//   })
-//   .catch(({message}) => {
-//     console.log(message);
-//   })
+schema
+  .sync({alter : true})
+  .then((data) => {
+    console.log('users table created successfuly');
+  })
+  .catch(({message}) => {
+    console.log(message);
+  })
 
 
 

@@ -46,13 +46,13 @@ var schema = sequelize.define('Events', {
 
 // schema.drop();
 
-// schema
-//   .sync({alter : true})
-//   .then((data) => {
-//     console.log("Events table updated successfuly");
-//   })
-//   .catch(({message}) => {
-//     console.log(message);
-//   })
+schema
+  .sync({alter : true})
+  .then((data) => {
+    console.log("Events table updated successfuly");
+  })
+  .catch(({message}) => {
+    console.log(message);
+  })
 
 module.exports = schema;

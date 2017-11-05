@@ -1,0 +1,35 @@
+{
+	"production": {
+		"use_env_variable": "postgres://upppchumyplkrq:79a5de71919705d48180c44314f27f57f0a0b00183b53754532310a6c570992d@ec2-54-235-150-134.compute-1.amazonaws.com:5432/d3jbsn339m748l"
+	},
+	"asharMysql" : {
+		"server" : "localhost",
+		"db" : "humanity",
+		"user" : "root",
+		"password" : "AS-har1passms"
+	},
+	"asharPsql" : {
+		"server" : "localhost",
+		"db" : "humanity",
+		"user" : "ashar",
+		"password" : "AS-har1passpg"
+	},
+	"psql" : {
+		"server" : "ec2-54-225-112-61.compute-1.amazonaws.com",
+		"db" : "d2i4b7nf4saf7",
+		"user" : "sczoygkgjzlpcd",
+		"password" : "187c7a7152db5cafd171ad6227d1a5267cc6f5801d6e29a5e629b3bd3ae6a704"
+	},
+	"psql2" : {
+		"server" : "ec2-54-235-150-134.compute-1.amazonaws.com",
+		"db" : "d3jbsn339m748l",
+		"user" : "upppchumyplkrq",
+		"password" : "79a5de71919705d48180c44314f27f57f0a0b00183b53754532310a6c570992d"
+	},
+	"mai" : {
+		"server" : "sql12.freemysqlhosting.net",
+		"db" : "sql12201289",
+		"user" : "sql12201289",
+		"password": "RImDWfyQF6"
+	}
+}
