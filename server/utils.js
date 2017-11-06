@@ -466,7 +466,7 @@ function deleteConnection (query, cb) {
   OrgsEvents.findAll({where : query})
     .then((connection) => {
       if (connection === null) {
-        cb(true,"done deleting event and no connections were found");
+        return cb(true,"done deleting event and no connections were found");
       } 
       connection.destroy({});
       cb(true, "done deleting event and it's connections");
