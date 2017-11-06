@@ -451,10 +451,12 @@ function eventusers(id, cb) {
 function deleteEvent (event_id, cb) {
   Events.find({where :{"id" : event_id}})
     .then((event) => {
-      if (event === null) {return cb (false , "event doesn't exist")}
+      if (event === null) {return cb (true , "no connections to delete ")}
       event.destroy({})
         .then((connection) => {
-          deleteConnection({"event_id" : event_id}, cb);
+          deleteConnection({"event_id" : event_id}, (done, m) => {
+             cb(done , event + m);
+          });
         })
     })
     .catch(({message}) => {
@@ -466,7 +468,7 @@ function deleteConnection (query, cb) {
   OrgsEvents.findAll({where : query})
     .then((connection) => {
       if (connection === null) {
-        return cb(true,"done deleting event and no connections were found");
+        return cb(true," ,no connections were found to delete");
       } 
       connection.destroy({});
       cb(true, "done deleting event and it's connections");
