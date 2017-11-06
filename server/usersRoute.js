@@ -69,7 +69,16 @@ module.exports = {
           })
           .catch((err) => {
             console.log(err)
-            var m = "recieved user : " + user.username + " but not saved coz : " ;
+            var m = `error saving user : ${user.username} - sign up coz : ${err.message} , `;
+            if (err.original && err.original.message) {
+              console.log(err.original.message);
+              m += err.original.message;
+            }
+            if (err.errors && err.errors.length) {
+              for (var er of err.errors) {
+                m += er.message;
+              }
+            }
             var missing = [];
             if (!user.username) {
               missing.push('name');

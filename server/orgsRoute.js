@@ -72,7 +72,16 @@ module.exports = {
             cb(true , m);
           })
           .catch((err) => {
-            var m = `error saving org : ${org} - sign up coz : ${err.message}`;
+            var m = `error saving org : ${org.name} - sign up coz : ${err.message} , `;
+            if (err.original && err.original.message) {
+              console.log(err.original.message);
+              m += err.original.message;
+            }
+            if (err.errors && err.errors.length) {
+              for (var er of err.errors) {
+                m += er.message;
+              }
+            }
             var missing = [];
             if (!org.name) {
               missing.push('name');
