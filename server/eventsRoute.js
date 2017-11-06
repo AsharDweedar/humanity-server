@@ -139,7 +139,7 @@ module.exports = {
             cb(false, message);
           })
     },
-    '/delteevent' : (req, res, cb) => {
+    '/deleteevent' : (req, res, cb) => {
       org_id = req.session.orgid;
       event_id = req.body.id;
       utils.deleteEvent(event_id, cb);

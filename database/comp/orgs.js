@@ -27,15 +27,15 @@ var schema = sequelize.define('Orgs', {
 
 // schema.drop();
 
-schema
-  .sync({
-          alter: true
-        })
-  .then((data) => {
-    console.log("Orgs table updated successfuly");
-  })
-  .catch(({message}) => {
-    console.log(message);
-  })
+// schema
+//   .sync({
+//           alter: true
+//         })
+//   .then((data) => {
+//     console.log("Orgs table updated successfuly");
+//   })
+//   .catch(({message}) => {
+//     console.log(message);
+//   })
 
 module.exports = schema;
