@@ -472,7 +472,7 @@ function deleteConnection (query, cb) {
       console.log('...................................')
       console.log(connections)
       console.log('...................................')
-      if (connections === null || !connections) {
+      if (!connections.length || !connections) {
         return cb(true," ,no connections were found to delete");
       } 
       var count = connections.length;
