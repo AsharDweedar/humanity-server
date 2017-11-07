@@ -34,4 +34,17 @@ module.exports = {
         res.send(message);
       })
   },
+  '/deleteconnectionswhere' : (req, res) => {
+    utils.OrgsEvents.findAll(req.body)
+      .then((all) => {
+        for (var ev of all) {
+          ev.destroy();
+        }
+        res.send("deleteing");
+      })
+      .catch(({message}) => {
+        console.log(message);
+        res.send(message);
+      })
+  },
 }

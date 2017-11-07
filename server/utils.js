@@ -143,8 +143,10 @@ function findUserEvents (ID, cb)  {
       for (var i = 0; i < counter; i++) {
         Events.find({where: {id : connection[i].event_id}})
         .then((ev) => {
-          console.log('event : ' , ev.name);
-          all.push(ev);
+          if (ev) {
+            console.log('event : ' , ev.name);
+            all.push(ev);
+          }
           if (--counter === 0) {
             cb(true, all);
           }
@@ -453,7 +455,7 @@ function deleteEvent (event_id, cb) {
     .then((event) => {
       if (event === null) {return cb (true , "no connections to delete ")}
       event.destroy({})
-        .then((connection) => {
+        .then((someThing) => {
           deleteConnection({"event_id" : event_id}, (done, m) => {
              cb(done , event + m);
           });
@@ -466,12 +468,22 @@ function deleteEvent (event_id, cb) {
 
 function deleteConnection (query, cb) {
   OrgsEvents.findAll({where : query})
-    .then((connection) => {
-      if (connection === null) {
+    .then((connections) => {
+      if (connections === null || !connections) {
         return cb(true," ,no connections were found to delete");
       } 
-      connection.destroy({});
-      cb(true, "done deleting event and it's connections");
+      var count = connections.length;
+      for (var conn of connections) {
+        conn.destroy({})
+        .then((data) => {
+          if (!(--count)) {
+            cb(true, "done deleting event and it's connections");
+          }
+        })
+        .catch(({message}) => {
+          console.log(message);
+        })
+      }
     })
     .catch(({message}) => {
       cb(false, message);

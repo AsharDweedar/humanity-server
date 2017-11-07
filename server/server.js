@@ -488,6 +488,10 @@ app.post("/admin/connectionswhere", (req, res) => {
   adminRouter['/connectionswhere'](req, res);
 });
 
+app.post("/admin/deleteconnectionswhere", (req, res) => {
+  adminRouter['/deleteconnectionswhere'](req, res);
+});
+
 
 /***************************************************
 
