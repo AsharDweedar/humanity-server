@@ -469,6 +469,9 @@ function deleteEvent (event_id, cb) {
 function deleteConnection (query, cb) {
   OrgsEvents.findAll({where : query})
     .then((connections) => {
+      console.log('...................................')
+      console.log(connections)
+      console.log('...................................')
       if (connections === null || !connections) {
         return cb(true," ,no connections were found to delete");
       } 
