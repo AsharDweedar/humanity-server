@@ -9,41 +9,9 @@ server files :
 /*******************************************************************/
 
 '/users'
-
-  get : 
-
-    '/' : 
-
-    '/signout' : 
-
-    '/userinfo' : 
-      take userName from req.session.username;
-
-  post :
-
-    '/signin' : 
-      take user from req.body
-
-    '/signup' : 
-        take user from req.body;
-
-    '/deleteuser' :
-      take user from req.body;
-
-    '/userbyid' :
-      take user id from req.body.user_id;
-      
-    '/editprofile' :
-      take userinfo from req.body;
-
-  delete : 
-    '/deleteuser' : 
-
-      take userName from req.session.username;
-
-/*******************************************************************/
-/*******************************************************************/
-/*******************************************************************/
+  get : ('/' , '/signout' , '/userinfo' );
+  post : ('/signin' , '/signup' , '/userbyid' , '/voteuser' , '/editprofile'
+  delete : ('/deleteuser')  
 
 '/orgs' : 
 
@@ -54,9 +22,10 @@ server files :
     '/signout' : 
 
     '/orginfo' : 
-      take orgName from req.session.orgname;
-
-  post :
+      take orgName from req.session.org =>
+        - data :
+        - action :
+        - response : 
 
     '/signin' : 
         take org from req.body
@@ -85,9 +54,10 @@ server files :
       take org_id from req.session.orgid
 
     '/userevents' : 
-      take usesr_id from req.session.userid
-
-  post : 
+      take usesr_id from req.session.us =>
+        - data :
+        - action :
+        - response : 
 
     '/create' : 
       take event from req.body;
@@ -114,3 +84,536 @@ server files :
     '/unjoin' : 
       take event_id from req.body.id;
       take user_id from req.session.id;
+
+
+##At our server we used __express__ to handle requests and some helping middlewares like :
+```
+ 1- morgan ;
+ 2- bodyParser;
+ 3- express-session;
+ 4- cookie-parser;
+```
+
+##files were seperated as following :
+```
+1- routing files : 
+  a- users route;
+  b- orgs route;
+  c- events route;
+2- helping files :
+  a- admin route;
+  b- utils;
+```
+
+/------------------------------------------------/
+/-------------    users router  -----------------/
+/------------------------------------------------/
+
+get => /users => response is : array of users;
+
+get => /users/signout =>
+  - action :
+    [x] destroy the session ;
+  - response is : object with key: "done" and value: boolean;
+
+get => /users/userinfo => 
+  - data : take username from req.session.username;
+  - action :
+    [x] get data of the usesr from the database;
+  - response is : object with 
+    key: "done" , value: boolean;
+    key: "user" , value: object;
+    key: "message" , value: string;
+
+post => '/users/signin' =>
+  - data : take username and password from req.body;
+  - action :
+    [x] check user existance in the database and compare thier hashed password;
+  - response : created session as request cookie and object with all user informations and all events they joined to;
+
+post => '/users/signup' =>
+  - data : take all user information from req.body;
+  - action :
+    [x] check username existance in the users table in the database since it can't be dublicated
+    [x] take decision to store the user data or refuse it with error message
+  - response : object with 
+    key: "saved" , value: boolean;
+    key: "missing" , value: array of missing informations needed to regester;
+
+post => '/users/userbyid' =>
+  - data : take user id from req.body.user_id;
+  - action :
+    [x] search for users at the database using thier ids
+  - response : 
+    object with  {"user" : info and events he joined to}
+      or
+    object with {"error" : message}
+
+post => '/users/voteuser' =>
+  - data : take {user_id , vote } from the req.boby and {orgid}} from the req.session
+  - action : 
+    [x] check if the user joined the event and it belongs to the org;
+    [x] add the vote to the orgsEvents table at the database;
+    [x] update user average rate for the user at the database;
+  - response :object with {"done" : boolean, "data" :user informations , "message": string}
+
+
+put => '/users/editprofile' => 
+  - data : all user new data from req.body && user_id from req.session
+  - action :
+    [x] check if the user is signed in;
+    [x] update user data at the database - update password hash if needed;
+  - response : object with {"done": boolean, "data": new usesr data after editing, "message": string};
+
+delete => '/users/deletemyaccount' => 
+  data : take userName from req.session.username;
+  action :
+    [x] check if the user is signed in 
+    [x] delete user account
+    [x] 
+  usersRouter["delete"]["/deletemyaccount"](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? { done: done } : { error: error });
+  });
+});
+
+
+/***************************************************
+
+orgs router from here
+
+**************************************************/
+
+
+var orgsRouter = require('./orgsRoute.js');
+get('/orgs', (req, res) => {
+  orgsRouter['get']['/'](req, res, (done, orgs,m) => {
+    res.status(done ? ((orgs.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    res.send(orgs);
+  });
+});
+
+get('/orgs/signout', (req, res) => {
+  console.log('signing out for : ', req.session.name)
+  if (req.session.name) {
+    orgsRouter['get']['/signout'](req, res, (done) => {
+      res.status(done ? 202 : 501); 
+      //202 : accepted , 501 : internal server error => not implemented
+      res.send({"done" : done});
+    });
+  } else {
+    res.status(400);
+    //400 : bad request ... there is no session to destoy
+    res.send({"done" : false});
+  }
+});
+
+get('/orgs/orginfo', (req, res) => {
+  if (!req.session || !req.session.name) {
+    res.status(400);//400 : bad request
+    return res.send({"found" : false , "message" : "not signed in"});
+  } 
+  orgsRouter['get']['/orginfo'](req, res, (done, org, m) => {
+    var st = done ? (org !== null ? 302 : 404 ) : 500 ;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
+    res.send({ "found": done, "org": org, "message" : m})
+  });
+});
+
+post => '/orgs/signin' =>
+  - data :
+  - action :
+  - response : 
+  if (!!req.session.name) {
+    res.status(400); //401 : un authrized ...
+    console.log('already signed in for : ' + req.session.name);
+    return res.send({"message" : "already signed in"})
+  }
+  orgsRouter['post => ]['/signin'](req, =>
+    - data :
+    - action :
+    - response : 
+    //create the session here ....
+    console.log(`signing in for : ${info.name}`);
+    if (!!info.name) {
+      req.session.name = info.name;
+      req.session.orgid = info.id;
+      req.session.type = "org";
+      console.log('session : ', req.session);
+    }
+    res.send(info);
+  });
+});
+
+post => '/orgs/signup' =>
+  - data :
+  - action :
+  - response : 
+  orgsRouter['post => ]['/signup'](req, res, (done, messa =>
+    - data :
+    - action :
+    - response : 
+    res.status(done ? 201 : 400);
+    //201 : created , 400 : bad request
+    var obj = {message : message}
+    obj.saved = done ;
+    obj.missing = missing;
+    res.send(obj);
+  });
+});
+
+post => '/orgs/orgbyid' =>
+  - data :
+  - action :
+  - response : 
+  if (!req.body.org_id) {
+    res.status(400);
+    console.log('find org (bad request) for the body : ');
+    console.log(req.body);
+    return res.send({"error" : "send org_id please"});
+  }
+  orgsRouter['post => ]['/orgbyid'](req, res, (done, da =>
+    - data :
+    - action :
+    - response : 
+    var st = done ? (org !== null ? 302 : 404) : 500;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
+    res.send({ found: done, org: org, message: m });
+  });
+});
+
+put("/orgs/editprofile", (req, res) => {
+  if (!req.session && !req.session.name) {
+    res.status(401); // 401 : not authorized
+    return res.send({ done: false, message: "not signed in as org" });
+  }
+  orgsRouter["put"]["/editprofile"](req, res, (done, data, message) => {
+    console.log("recieved from routers 'orgs/editprofile' : ", done);
+    var st = done ? (data !== null ? 202 : 400) : 500;
+    //200 : ok , 400 : bad request,500 : internal server error
+    console.log(message);
+    res.status(st);
+    res.send({ done: done, data: data, message: message });
+  });
+});
+
+delete('/orgs/deletemyaccount', (req, res) => {
+  orgsRouter["delete"]['/deletemyaccount'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send({"done" : done , "error" : err});
+  })
+});
+
+/***************************************************
+
+events router from here
+
+**************************************************/
+
+var eventsRouter = require('./eventsRoute.js');
+
+get('/events', (req, res) => {
+  eventsRouter['get']['/'](req, res, (done, events) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    if (done) console.log('found : ' + events.length + ' events !!!!');
+    res.send(events);
+  });
+});
+
+get('/events/orgevents', (req, res) => {
+  var re = {};
+  if (!req.session.name) {
+    res.status(400);
+    re.found = false;
+    re.message = "sign in first";
+    return res.send(re);
+  } 
+  eventsRouter['get']['/orgevents'](req, res, (done, events, m) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    re = (events.length) ? { events : events} : {message : m}; 
+    res.send(re);
+  });
+});
+
+get('/events/userevents', (req, res) => {
+  var re = {};
+  if (!req.session.username) {
+    res.status(400); //400: bad request
+    re.found = false;
+    re.message = "sign in first";
+    return res.send(re);
+  } 
+  eventsRouter['get']['/userevents'](req, res, (done, events , m) => {
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    done ? re.events = events : re.message = m ; 
+    console.log(re);
+    res.send(re);
+  });
+});
+
+post => '/events/create' =>
+  - data :
+  - action :
+  - response : 
+  if (!req.session && req.session.type !== "org") {
+    res.status(401); //401 : un authrized ...
+    console.log('un authrized user to create event .....');
+    return res.send({message : "sign in as organisation first !!"})
+  }
+  eventsRouter['post => ]['/create'](req, res, (do =>
+    - data :
+    - action :
+    - response : 
+    res.status(done ? 201 : 400); //201: created , 400 : bad request
+    res.send({"message" : message});
+  });
+});
+
+post => '/events/join' =>
+  - data :
+  - action :
+  - response : 
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : un authrized ...
+    console.log('un authrized user to join event .....', req.session);
+    return res.send({"done" : false , "message" : "sign in as user first !!"})
+  }
+  eventsRouter['post => ]['/join'](req, res, (do =>
+    - data :
+    - action :
+    - response : 
+    console.log(done, message)
+    console.log('done, message')
+    res.send({"done" : done , "message" : message});
+  });
+});
+
+post => '/events/vote' =>
+  - data :
+  - action :
+  - response : 
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : un authrized ...
+    console.log("trying to vote Event event .....", req.session);
+    return res.send({ done: false, message: "sign in as user first !!" });
+  }
+  eventsRouter["post => ]["/vote"](req, res, (done, da =>
+    - data :
+    - action :
+    - response : 
+    res.send({ done: done, message: message, data: data });
+  });
+});
+
+post => '/events/bytime' =>
+  - data :
+  - action :
+  - response : 
+  eventsRouter['post => ]['/bytime'](req, res, (done, even =>
+    - data :
+    - action :
+    - response : 
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    res.send({"done" : done , "events": events,"message" : message});
+  });
+});
+
+post => '/events/bylocation' =>
+  - data :
+  - action :
+  - response : 
+  eventsRouter['post => ]['/bylocation'](req, res, (done, even =>
+    - data :
+    - action :
+    - response : 
+    res.status(done ? ((events.length) ? 302 : 404 ) : 500);
+    //302 : found , 404 : not found, 500 : intrnal server error
+    res.send({"done" : done , "events": events,"message" : message});
+  });
+});
+
+post => "/events/eventusers" =>
+  - data :
+  - action :
+  - response : 
+  if (!req.body.id) {
+    res.status(400);
+    console.log("find org (bad request) for the body : ");
+    console.log(req.body);
+    return res.send({ error: "send event id please" });
+  }
+  eventsRouter["post => ]["/eventusers"](req, res, (don =>
+    - data :
+    - action :
+    - response : 
+    console.log("users found  : ", users.length);
+    var st = done ? (users !== null ? 302 : 404) : 500;
+    //302 : found , 404 : not found ,500 : internal server error
+    res.status(st);
+    res.send({ found: done, users: users, message: m });
+  });
+});
+
+put('/events/updateevent', (req, res) => {
+  if (!req.session && req.session.type !== "org") {
+    res.status(401); //401 : un authrized ...
+    console.log("un authrized user to create event .....");
+    return res.send({ message: "sign in as organisation first !!" });
+  }
+  eventsRouter["post => ]["/updateevent"](req, res, (done, eve =>
+    - data :
+    - action :
+    - response : 
+    res.status(done ? 200 : 400); //200 : ok , 400 : bad request
+    res.send({"done": done, "event": event, "message": message});
+  });
+});
+
+delete('/events/deleteevent', (req, res) => {
+  if (!req.session || (req.session && req.session.type !== "org")) {
+    res.status(401); //401 : un authrized ...
+    console.log('un authrized user to create event .....');
+    return res.send({message : "sign in as organisation first !!"})
+  }
+  eventsRouter["delete"]['/deleteevent'](req, res, (done, message) => {
+    res.status(done ? 201 : 400);//201: created , 400 : bad request
+    res.send({"done" : done , "message" : message});
+  });
+});
+
+delete("/events/unjoin", (req, res) => {
+  if (!req.session && !req.session.username) {
+    res.status(401); //401 : un authrized ...
+    console.log("un authrized user to un-join event .....", req.session);
+    return res.send({ done: false, message: "sign in as user first !!" });
+  }
+  eventsRouter["delete"]["/unjoin"](req, res, (done, message) => {
+    res.send({ done: done, message: message });
+  });
+});
+
+/***************************************************
+
+admin
+
+**************************************************/
+
+var adminRouter = require('./adminRoute.js');
+
+post => '/admin/deleteEvent' =>
+  - data :
+  - action :
+  - response : 
+  adminRouter['/deleteEvent'](req, res, (done, message) => {
+    res.send({"done" : done , "message" : message});
+  });
+});
+
+post => '/admin/createEvent' =>
+  - data :
+  - action :
+  - response : 
+  adminRouter['/createEvent'](req, res, (done, message) => {
+    res.status(done ? 201 : 400); //400 : bad req , 201 : created
+    res.send({"message" : message});
+  });
+});
+
+
+post => '/admin/deleteorg' =>
+  - data :
+  - action :
+  - response : 
+  adminRouter['/deleteorg'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? { "done": done } : { "error": error });
+  })
+});
+
+post => '/admin/deleteuser' =>
+  - data :
+  - action :
+  - response : 
+  adminRouter['/deleteuser'](req, res, (done, err) => {
+    res.status(done ? 202 : 500); //202 : accepted , 500 :server err
+    res.send(done ? { "done": done } : { "error": err });
+  });
+});
+
+get("/admin/connections", (req, res) => {
+  adminRouter['/connections'](req, res);
+});
+
+post => "/admin/connectionswhere" =>
+  - data :
+  - action :
+  - response : 
+  adminRouter['/connectionswhere'](req, res);
+});
+
+post => "/admin/deleteconnectionswhere" =>
+  - data :
+  - action :
+  - response : 
+  adminRouter['/deleteconnectionswhere'](req, res);
+});
+
+
+/***************************************************
+
+common 
+
+**************************************************/
+
+var utils = require('./utils.js');
+
+get('/isLoggedIn', (req, res) => {
+  var obj = {}
+  if (!req.session && !req.session || !req.session.type) {
+    obj.isLoggedIn = false;
+    obj.type = "";
+    return res.send(obj);
+  }
+  obj.isLoggedIn = true;
+  if (req.session.type === "org") {
+    obj.type = "org";
+    utils.findOrgWhere({where: {name: req.session.name}}, (found, [dbOrg]) => {
+      if (found) {
+        utils.findOrgEvents(dbOrg.id , (done, evArr, m) => {
+          if (done) {
+            dbOrg.setDataValue ('events', evArr);
+          } 
+          obj.data = dbOrg.dataValues;
+          res.send(obj);
+        })
+      } else {
+        res.status(500); //500 : server error
+        res.send(obj);
+      }
+    });
+  }
+  if (req.session.type === "user") {
+    obj.type = "user";
+    utils.findUserWhere({where: {username: req.session.username}}, (found, [dbUser]) => {
+      if (found) {
+        utils.findUserEvents(dbUser.id , (done, evArr, m) => {
+          if (done) {
+            dbUser.setDataValue ('events', evArr);
+          } 
+          obj.data = dbUser.dataValues;
+          res.send(obj);
+        })
+      } else {
+        res.status(500); //500 : server error
+        res.send(obj);
+      }
+    });
+  }
+});

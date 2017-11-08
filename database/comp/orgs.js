@@ -8,7 +8,7 @@ var schema = sequelize.define('Orgs', {
     unique:true
   },
   description: {
-    type: Sequelize.TEXT
+    type: Sequelize.TEXT,
   },
   password:{
   	type:Sequelize.TEXT,
@@ -16,7 +16,7 @@ var schema = sequelize.define('Orgs', {
   },
   email:{
   	type:Sequelize.TEXT,
-    allowNull: false
+    allowNull: false,
   },
   rate:{
     type:Sequelize.FLOAT,

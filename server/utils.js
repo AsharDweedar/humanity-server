@@ -457,7 +457,7 @@ function deleteEvent (event_id, cb) {
       event.destroy({})
         .then((someThing) => {
           deleteConnection({"event_id" : event_id}, (done, m) => {
-             cb(done , event + m);
+             cb(done , m );
           });
         })
     })

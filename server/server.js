@@ -5,7 +5,7 @@ var morgan = require('morgan'); //display req in terminal ..
 app.use(morgan('dev'));
 
 //APIs request , if needed
-var request = require('request'); 
+// var request = require('request'); 
 
 //read req body data 
 var bodyParser = require('body-parser');  
@@ -150,6 +150,7 @@ app.post('/users/voteuser', (req, res) => {
      //200 : ok , 400 : bad request,500 : internal server error
      console.log(message);
      res.status(st);
+     res.send({"done" : done ,  "data" : data, "message" : message});
   });
 });
 
