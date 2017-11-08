@@ -102,6 +102,7 @@ module.exports = {
           }
         }
       }
+      if (!query.where) return cb (false, [], "PLASE ENTER TIME !!");
       utils.findEventWhere(query, cb);
     },
     '/bylocation' : ({body : {location}}, res, cb) => {
