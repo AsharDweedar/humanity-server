@@ -81,7 +81,7 @@ module.exports = {
         if (!timeB[1]) timeB[1] = "00:00";
         timeFormate = timeB[0] + "T" + timeB[1] + ":00.000Z";
       }
-      var query = {where : {}};
+      var query = {};
       if (after && before) {
         query.where = {
           time : {
@@ -105,7 +105,12 @@ module.exports = {
       utils.findEventWhere(query, cb);
     },
     '/bylocation' : ({body : {location}}, res, cb) => {
-      var query = { where: { location: location}};
+      var query;
+      if (location) {
+        query = { where: { location: location}};
+      } else {
+        query = {};
+      }
       utils.findEventWhere(query, cb);
     },
     '/eventusers' : ({body : {id}}, res, cb) => {

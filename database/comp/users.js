@@ -20,7 +20,10 @@ var schema = sequelize.define('Users', {
   },
   rate:{
     type:Sequelize.FLOAT,
-  }
+  },
+  phone:{
+    type:Sequelize.DOUBLE,
+  } 
 });
 
 // schema.drop();

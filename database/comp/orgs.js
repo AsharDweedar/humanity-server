@@ -22,6 +22,9 @@ var schema = sequelize.define('Orgs', {
     type:Sequelize.FLOAT,
     allowNull: false,
     defaultValue: 0,
+  },
+  phone:{
+    type:Sequelize.DOUBLE,
   } 
 });
 
