@@ -73,10 +73,12 @@ module.exports = {
     '/bytime' : ({body: {after , before}}, res, cb) => {
       if (after) {
         var timeA = after.split(' ');
+        if (!timeA[1]) timeA[1] = '00:00';
         timeFormate = timeA[0] + "T" + timeA[1] + ":00.000Z";
       }
       if (before) {
         var timeB = before.split(' ');
+        if (!timeB[1]) timeB[1] = "00:00";
         timeFormate = timeB[0] + "T" + timeB[1] + ":00.000Z";
       }
       var query = {where : {}};
