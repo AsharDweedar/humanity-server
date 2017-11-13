@@ -1,8 +1,8 @@
 
 var Sequelize = require('sequelize');
 
-const sequelize = new Sequelize("sql11203735", "sql11203735", "CfR6YnSvYM" , {
-  host: "sql11.freemysqlhosting.net",
+const sequelize = new Sequelize("humanity", "jv184vjd1yqqck4d", "tqjnn4ga6ug78o4r" , {
+  host: "hngomrlb3vfq3jcr.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
   dialect: 'mysql',
   pool: {
     max: 5,
